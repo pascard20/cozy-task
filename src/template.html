@@ -4,66 +4,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/3bf39cf55c.js" crossorigin="anonymous"></script>
-  <title>The Generic Restaurant</title>
-  <link rel="icon" type="image/png" href="img/favicon.ico">
+  <title>COZYtask</title>
 </head>
 
 <body>
-  <nav>
-    <div class="nav__title">
-      <div class="nav__title--top">The Generic</div>
-      <div class="nav__title--bottom">Restaurant</div>
-    </div>
-    <ul>
-      <li><button class="nav__btn btn--home">Home</button></li>
-      <li><button class="nav__btn btn--menu">Menu</button></li>
-      <li><button class="nav__btn btn--about">About</button></li>
-      <li><button class="nav__btn btn--contact">Contact</button></li>
+
+  <nav class="nav">
+    <h1 class="nav__title">
+      <span class="nav__title--first">cozy</span><span class="nav__title--second">task</span>
+    </h1>
+    <hr class="divider">
+    <h2 class="nav__section-title">Tasks</h2>
+    <ul class="nav__section">
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">All</div>
+        <div class="nav__count count">
+          <div class="count--important">5</div>
+          <div class="count--default">33</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Today</div>
+        <div class="nav__count count">
+          <div class="count--important">1</div>
+          <div class="count--default">10</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">This week</div>
+        <div class="nav__count count">
+          <div class="count--important">2</div>
+          <div class="count--default">17</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Overdue</div>
+        <div class="nav__count count">
+          <div class="count--important"></div>
+          <div class="count--default">5</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Completed</div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Deleted</div>
+      </li>
     </ul>
-    <button class="nav__title--phone btn"><i class="fa-solid fa-phone"></i> 123 456 789</button>
+    <h2 class="nav__section-title">Projects</h2>
+    <ul class="nav__section">
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Uncategorized</div>
+        <div class="nav__count count">
+          <div class="count--important">1</div>
+          <div class="count--default">17</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Work</div>
+        <div class="nav__count count">
+          <div class="count--important">10</div>
+          <div class="count--default">27</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">House</div>
+        <div class="nav__count count">
+          <div class="count--important">3</div>
+          <div class="count--default">18</div>
+        </div>
+      </li>
+      <li class="nav__item">
+        <div class="nav__item-icon"></div>
+        <div class="nav__item-name">Hobby</div>
+        <div class="nav__count count">
+          <div class="count--important"></div>
+          <div class="count--default">7</div>
+        </div>
+      </li>
+      <li class="nav__item nav__add-project">+ New project</li>
+    </ul>
   </nav>
-  <main>
-    <div class="top">
-      <div class="top__title">
-        <span class="title--top">The Generic</span>
-        <span class="title--bottom">Restaurant</span>
-        <span class="title--subtitle">Flavors you’ve definitely tasted before</span>
+
+  <main class="main">
+    <div class="main__wrapper">
+      <div class="main__header">
+        <h1 class="main__title">Life</h1>
+        <div class="main__count count">
+          <div class="count--important">5</div>
+          <div class="count--default">33</div>
+        </div>
+        <div class="main__add-task">+ New task</div>
       </div>
-      <div class="top__menu-button">
-        <p>Meet us</p>
-        <i class="fa-solid fa-arrow-down"></i>
-      </div>
-      <div class="top__background"></div>
+      <hr class="divider">
+      <ul class="main__tasks">
+        <li class="main__item">
+          <div class="main__item-checkbox"></div>
+          <div class="main__item-duedate">Tomorrow</div>
+          <div class="main__item-name">Buy groceries</div>
+          <div class="main__item-description">Milk, eggs, bread and vegetables</div>
+          <div class="main__item-icon main__item-edit"></div>
+          <div class="main__item-icon main__item-delete"></div>
+        </li>
+        <li class="main__item main__item--important">
+          <div class="main__item-checkbox"></div>
+          <div class="main__item-duedate">Today</div>
+          <div class="main__item-name">Respond to client emails</div>
+          <div class="main__item-description"></div>
+          <div class="main__item-icon main__item-edit"></div>
+          <div class="main__item-icon main__item-delete"></div>
+        </li>
+        <li class="main__item">
+          <div class="main__item-checkbox"></div>
+          <div class="main__item-duedate">Saturday, Apr 19</div>
+          <div class="main__item-name">Clean the kitchen</div>
+          <div class="main__item-description">Wipe counters, take out trash</div>
+          <div class="main__item-icon main__item-edit"></div>
+          <div class="main__item-icon main__item-delete"></div>
+        </li>
+        <li class="main__item">
+          <div class="main__item-checkbox"></div>
+          <div class="main__item-duedate">Friday, Apr 21</div>
+          <div class="main__item-name">Go for a 30-minute run</div>
+          <div class="main__item-description"></div>
+          <div class="main__item-icon main__item-edit"></div>
+          <div class="main__item-icon main__item-delete"></div>
+        </li>
+        <li class="main__item main__item--completed">
+          <div class="main__item-checkbox"></div>
+          <div class="main__item-duedate">Sunday, Apr 29</div>
+          <div class="main__item-name">Finish reading chapter 4 of Atomic Habits</div>
+          <div class="main__item-description"></div>
+          <div class="main__item-icon main__item-edit"></div>
+          <div class="main__item-icon main__item-delete"></div>
+        </li>
+      </ul>
     </div>
-    <div class="bottom">
-    </div>
+
   </main>
-  <footer>
-    <div class="opening">
-      <h3 class="opening__title">Opening Times</h3>
-      <ul class="opening__times">
-        <li>Mon - Fri: 08:00 - 22:30</li>
-        <li>Sat: 09:00 - 23:00</li>
-        <li>Sun: 10:00 - 20:00</li>
-      </ul>
-    </div>
-    <div class="newsletter">
-      <h3 class="newsletter__title">Newsletter</h3>
-      <p class="newsletter__desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium, minus.</p>
-      <input type="text" class="newsletter__input" placeholder="eg. example@mail.com">
-      <button class="newsletter__btn btn">Subscribe</button>
-    </div>
-    <div class="social-media">
-      <h3 class="social-media__title">Our social media</h3>
-      <ul class="social-media__icons">
-        <li><i class="fa-brands fa-facebook"></i></li>
-        <li><i class="fa-brands fa-instagram"></i></li>
-        <li><i class="fa-brands fa-x-twitter"></i></li>
-        <li><i class="fa-brands fa-tiktok"></i></li>
-      </ul>
-    </div>
-  </footer>
+
 </body>
 
 </html>
