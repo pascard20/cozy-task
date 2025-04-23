@@ -7,6 +7,7 @@
   --colorAccentLight: #D35D5C;
   --colorText: #4D4242;
   --colorTextLight: #827A79;
+  --colorTextOpaque: #b3aaa9;
   --colorHover: rgba(0, 0, 0, .075);
   --colorHoverLight: rgba(0, 0, 0, .03)
 }
@@ -74,14 +75,66 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
   gap: 1rem;
   padding: .5rem;
+
+  .nav__count {
+    transition: .3s;
+  }
+
+  .nav__item-settings {
+    transition: .2s;
+  }
 
   &:hover {
     background: var(--colorHover);
     mix-blend-mode: multiply;
     cursor: pointer;
+
+    .nav__count {
+      transition: .2s;
+    }
+
+    .nav__item-settings {
+      transition: .3s;
+    }
+
+    .nav__count {
+      opacity: 0;
+    }
+
+    .nav__item-settings {
+      opacity: 1;
+    }
   }
+}
+
+.nav__item-setting {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--colorTextOpaque);
+  /* opacity: 1; */
+  transition: .15s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: .825rem;
+
+  /* border: 1px solid red; */
+
+  &:hover {
+    color: var(--colorText);
+  }
+}
+
+.nav__item-settings {
+  position: absolute;
+  right: 0;
+  display: flex;
+  /* gap: .25rem; */
+  opacity: 0;
+  margin-right: .2rem;
 }
 
 .nav__item-icon {
@@ -196,7 +249,7 @@ body {
     cursor: pointer;
   }
 
-  &:hover>.main__item-icon {
+  &:hover>.main__item-setting {
     opacity: 1;
   }
 }
@@ -231,7 +284,7 @@ body {
   /* line-height: 1.5; */
 }
 
-.main__item-icon {
+.main__item-setting {
   grid-row: 2;
   width: 1rem;
   height: 1rem;

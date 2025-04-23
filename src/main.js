@@ -7,6 +7,23 @@ const elem = {
   navProjects: document.querySelector('.nav__projects')
 }
 
+const icons = {
+  folder: `<i class="fa-solid fa-folder"></i>`,
+  trash: `<i class="fa-solid fa-trash"></i>`,
+  day: `<i class="fa-solid fa-calendar-day"></i>`,
+  week: `<i class="fa-solid fa-calendar-week"></i>`,
+  edit: `<i class="fa-solid fa-pen-to-square"></i>`,
+  clock: `<i class="fa-solid fa-clock"></i>`,
+  check: `<i class="fa-solid fa-circle-check"></i>`,
+  globe: `<i class="fa-solid fa-globe"></i>`,
+  people: `<i class="fa-solid fa-people-group"></i>`,
+  house: `<i class="fa-solid fa-house"></i>`,
+  building: `<i class="fa-solid fa-building"></i>`,
+  dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
+  briefcase: `<i class="fa-solid fa-briefcase"></i>`,
+  game: `<i class="fa-solid fa-gamepad"></i>`
+}
+
 class Task {
   constructor(title, description = null, date = null, isImportant = false) {
     this.title = title;
@@ -30,8 +47,8 @@ class Task {
       <div class="main__item-duedate">Tomorrow</div>
       <div class="main__item-name">${this.title}</div>
       <div class="main__item-description">${this.description}</div>
-      <div class="main__item-icon main__item-edit"></div>
-      <div class="main__item-icon main__item-delete"></div>
+      <div class="main__item-icon main__item-edit">${icons.edit}</div>
+      <div class="main__item-icon main__item-delete">${icons.trash}</div>
     </li>`
   }
 
@@ -75,6 +92,10 @@ class NavElement {
       <div class="nav__item-icon">${this.icon}</div>
       <div class="nav__item-name">${this.name}</div>
       ${this.returnCounterHTML()}
+      <div class="nav__item-settings">
+        <div class="nav__item-setting nav__item-edit">${icons.edit}</div>
+        <div class="nav__item-setting nav__item-delete">${icons.trash}</div>
+      </div>
     </li>`
   }
 
@@ -85,6 +106,7 @@ class TaskGroup extends NavElement {
     super(name, icon, isCounting, tasks);
     this.countRule = countRule;
     // The count rule is a function that takes a task as an argument and returns true or false
+    // i.e. task => task.getDaysLeft() > 0
   }
 }
 
@@ -141,11 +163,11 @@ const app = (function () {
   const testContent = () => {
     addProject('Uncategorized', icons.folder);
     generateRandomTasks(projects[projects.length - 1]);
-    addProject('Work', icons.folder);
+    addProject('Work', icons.briefcase);
     generateRandomTasks(projects[projects.length - 1]);
-    addProject('House', icons.folder);
+    addProject('House', icons.house);
     generateRandomTasks(projects[projects.length - 1]);
-    addProject('Hobby', icons.folder);
+    addProject('Hobby', icons.game);
     generateRandomTasks(projects[projects.length - 1]);
     generateRandomTasks(deleted);
   }
@@ -161,7 +183,7 @@ const app = (function () {
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
     printNavElements(elem.navGroups, [...taskGroups, deleted]);
-    printNavElements(elem.navProjects, projects);
+    printNavElements(elem.navProjects, projects, `<li class="nav__item nav__add-project">+ New project</li>`);
   }
 
   const returnAllTasks = () => {
@@ -172,21 +194,17 @@ const app = (function () {
     return tasks;
   }
 
-  const icons = {
-    'folder': `<i class="fa-solid fa-folder"></i>`
-  }
-
   const projects = [];
-  const deleted = new Project('Deleted', icons.folder, false);
+  const deleted = new Project('Deleted', icons.trash, false);
   const taskGroups = [
-    new TaskGroup('All', icons.folder, () => true),
-    new TaskGroup('Today', icons.folder, task => task.getDaysLeft() === 0),
-    new TaskGroup('This Week', icons.folder, task => {
+    new TaskGroup('All', icons.globe, () => true),
+    new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
+    new TaskGroup('This Week', icons.week, task => {
       const days = task.getDaysLeft();
       return (days >= 0) && (days <= 7);
     }),
-    new TaskGroup('Overdue', icons.folder, task => task.getDaysLeft() < 0),
-    new TaskGroup('Completed', icons.folder, task => task.isCompleted, false)
+    new TaskGroup('Overdue', icons.clock, task => task.getDaysLeft() < 0),
+    new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
   ]
 
   testContent();
