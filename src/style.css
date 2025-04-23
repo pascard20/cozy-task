@@ -87,7 +87,11 @@ body {
 .nav__item-icon {
   width: 1rem;
   height: 1rem;
-  background: var(--colorTextLight);
+  /* background: var(--colorTextLight); */
+  color: var(--colorTextLight);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav__item-name {
