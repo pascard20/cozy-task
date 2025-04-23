@@ -59,8 +59,33 @@ class Task {
   }
 }
 
-class NavElement {
+class Counter {
+  returnCounterHTML(htmlClass, isEditable, importantTasksCount, defaultTasksCount) {
+    return `<div class="${htmlClass} count${isEditable ? '' : ' ignore'}">
+      ${importantTasksCount ? `<div class="count--important">${importantTasksCount}</div>` : ''}
+      ${defaultTasksCount ? `<div class="count--default">${defaultTasksCount}</div>` : ''}
+    </div>`;
+  }
+}
+
+class MainHeader extends Counter {
+  returnCounterHTML(currentElement) {
+    const importantTasks = currentElement.countImportantTasks();
+    const allTasks = currentElement.tasks.length;
+    return super.returnCounterHTML('main__count', false, importantTasks, allTasks - importantTasks);
+  }
+
+  returnHTML(currentElement) {
+    return currentElement ? `
+    <h1 class="main__title">${currentElement.name}</h1>
+    ${this.returnCounterHTML(currentElement)}
+    <div class="main__add-task">+ New task</div>` : '';
+  }
+}
+
+class NavElement extends Counter {
   constructor(name, icon, isCounting = true, isEditable = true, tasks = []) {
+    super();
     this.name = name;
     this.icon = icon;
     this.isCounting = isCounting;
@@ -73,20 +98,17 @@ class NavElement {
     if (icon) this.icon = icon;
   }
 
-  countImportant() {
+  countImportantTasks() {
     return this.tasks.reduce((count, item) => item.isImportant ? count + 1 : count, 0)
   }
 
-  formatCount(count) {
-    return count ? count : '';
-  }
-
   returnCounterHTML() {
-    return this.isCounting ? `
-    <div class="nav__count count${this.isEditable ? '' : ' ignore'}">
-      <div class="count--important">${this.formatCount(this.countImportant())}</div>
-      <div class="count--default">${this.formatCount(this.tasks.length)}</div>
-    </div>` : '';
+    return this.isCounting ? super.returnCounterHTML(
+      'nav__count',
+      this.isEditable,
+      this.countImportantTasks(),
+      this.tasks.length - this.countImportantTasks()
+    ) : '';
   }
 
   returnSettingsHTML() {
@@ -188,7 +210,7 @@ const app = (function () {
   }
 
   const printMain = () => {
-    elem.mainHeader.innerHTML = elementMain.returnHTML();
+    elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
     elem.mainTasks.innerHTML = '';
     if (currentElement) {
       currentElement.tasks.forEach(task => {
@@ -213,24 +235,6 @@ const app = (function () {
 
   let currentElement;
 
-  const elementMain = {
-    returnCounterHTML() {
-      const importantTasks = currentElement.countImportant();
-      const allTasks = currentElement.tasks.length;
-      return `<div class="main__count count">
-        ${importantTasks ? `<div class="count--important">${importantTasks}</div>` : ''}
-        ${allTasks ? `<div class="count--default">${allTasks}</div>` : ''}
-      </div>`
-    },
-
-    returnHTML() {
-      return currentElement ? `
-      <h1 class="main__title">${currentElement.name}</h1>
-      ${this.returnCounterHTML()}
-      <div class="main__add-task">+ New task</div>` : '';
-    }
-  }
-
   const projects = [];
   const taskGroups = [
     new TaskGroup('All', icons.globe, () => true),
@@ -245,8 +249,9 @@ const app = (function () {
   const deleted = new Project('Deleted', icons.trash, false, false);
   addProject('Uncategorized', icons.folder);
 
-  currentElement = taskGroups[1];
   testContent();
+  const mainHeader = new MainHeader();
+  currentElement = taskGroups[1];
 
   printMain();
 
