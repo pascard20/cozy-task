@@ -4,7 +4,9 @@ import { addDays, differenceInCalendarDays } from 'date-fns';
 
 const elem = {
   navGroups: document.querySelector('.nav__groups'),
-  navProjects: document.querySelector('.nav__projects')
+  navProjects: document.querySelector('.nav__projects'),
+  mainHeader: document.querySelector('.main__header'),
+  mainTasks: document.querySelector('.main__tasks')
 }
 
 const icons = {
@@ -47,8 +49,8 @@ class Task {
       <div class="main__item-duedate">Tomorrow</div>
       <div class="main__item-name">${this.title}</div>
       <div class="main__item-description">${this.description}</div>
-      <div class="main__item-icon main__item-edit">${icons.edit}</div>
-      <div class="main__item-icon main__item-delete">${icons.trash}</div>
+      <div class="main__item-setting main__item-edit">${icons.edit}</div>
+      <div class="main__item-setting main__item-delete">${icons.trash}</div>
     </li>`
   }
 
@@ -58,11 +60,12 @@ class Task {
 }
 
 class NavElement {
-  constructor(name, icon, isCounting = true, tasks = []) {
+  constructor(name, icon, isCounting = true, isEditable = true, tasks = []) {
     this.name = name;
     this.icon = icon;
     this.isCounting = isCounting;
     this.tasks = tasks;
+    this.isEditable = isEditable;
   }
 
   update(name = null, icon = null) {
@@ -80,9 +83,17 @@ class NavElement {
 
   returnCounterHTML() {
     return this.isCounting ? `
-    <div class="nav__count count">
+    <div class="nav__count count${this.isEditable ? '' : ' ignore'}">
       <div class="count--important">${this.formatCount(this.countImportant())}</div>
       <div class="count--default">${this.formatCount(this.tasks.length)}</div>
+    </div>` : '';
+  }
+
+  returnSettingsHTML() {
+    return this.isEditable ? `
+    <div class="nav__item-settings">
+      <div class="nav__item-setting nav__item-edit">${icons.edit}</div>
+      <div class="nav__item-setting nav__item-delete">${icons.trash}</div>
     </div>` : '';
   }
 
@@ -92,10 +103,7 @@ class NavElement {
       <div class="nav__item-icon">${this.icon}</div>
       <div class="nav__item-name">${this.name}</div>
       ${this.returnCounterHTML()}
-      <div class="nav__item-settings">
-        <div class="nav__item-setting nav__item-edit">${icons.edit}</div>
-        <div class="nav__item-setting nav__item-delete">${icons.trash}</div>
-      </div>
+      ${this.returnSettingsHTML()}
     </li>`
   }
 
@@ -103,7 +111,7 @@ class NavElement {
 
 class TaskGroup extends NavElement {
   constructor(name, icon, countRule, isCounting = true, tasks = []) {
-    super(name, icon, isCounting, tasks);
+    super(name, icon, isCounting, false, tasks);
     this.countRule = countRule;
     // The count rule is a function that takes a task as an argument and returns true or false
     // i.e. task => task.getDaysLeft() > 0
@@ -161,7 +169,6 @@ const app = (function () {
   }
 
   const testContent = () => {
-    addProject('Uncategorized', icons.folder);
     generateRandomTasks(projects[projects.length - 1]);
     addProject('Work', icons.briefcase);
     generateRandomTasks(projects[projects.length - 1]);
@@ -172,7 +179,7 @@ const app = (function () {
     generateRandomTasks(deleted);
   }
 
-  const printNavElements = (section, elements, additionalHTML = '') => {
+  const printElements = (section, elements, additionalHTML = '') => {
     section.innerHTML = "";
     elements.forEach(element => {
       section.insertAdjacentHTML('beforeend', element.returnHTML());
@@ -180,10 +187,20 @@ const app = (function () {
     section.insertAdjacentHTML('beforeend', additionalHTML);
   }
 
+  const printMain = () => {
+    elem.mainHeader.innerHTML = elementMain.returnHTML();
+    elem.mainTasks.innerHTML = '';
+    if (currentElement) {
+      currentElement.tasks.forEach(task => {
+        elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML())
+      })
+    }
+  }
+
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
-    printNavElements(elem.navGroups, [...taskGroups, deleted]);
-    printNavElements(elem.navProjects, projects, `<li class="nav__item nav__add-project">+ New project</li>`);
+    printElements(elem.navGroups, [...taskGroups, deleted]);
+    printElements(elem.navProjects, projects, `<li class="nav__item nav__add-project">+ New project</li>`);
   }
 
   const returnAllTasks = () => {
@@ -194,8 +211,27 @@ const app = (function () {
     return tasks;
   }
 
+  let currentElement;
+
+  const elementMain = {
+    returnCounterHTML() {
+      const importantTasks = currentElement.countImportant();
+      const allTasks = currentElement.tasks.length;
+      return `<div class="main__count count">
+        ${importantTasks ? `<div class="count--important">${importantTasks}</div>` : ''}
+        ${allTasks ? `<div class="count--default">${allTasks}</div>` : ''}
+      </div>`
+    },
+
+    returnHTML() {
+      return currentElement ? `
+      <h1 class="main__title">${currentElement.name}</h1>
+      ${this.returnCounterHTML()}
+      <div class="main__add-task">+ New task</div>` : '';
+    }
+  }
+
   const projects = [];
-  const deleted = new Project('Deleted', icons.trash, false);
   const taskGroups = [
     new TaskGroup('All', icons.globe, () => true),
     new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
@@ -206,7 +242,12 @@ const app = (function () {
     new TaskGroup('Overdue', icons.clock, task => task.getDaysLeft() < 0),
     new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
   ]
+  const deleted = new Project('Deleted', icons.trash, false, false);
+  addProject('Uncategorized', icons.folder);
 
+  currentElement = taskGroups[1];
   testContent();
+
+  printMain();
 
 })();
