@@ -271,6 +271,7 @@ body {
   font-size: .875rem;
   color: var(--colorTextLight);
   line-height: 1.3;
+  letter-spacing: .01em;
 }
 
 .main__item-name {

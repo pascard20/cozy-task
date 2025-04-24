@@ -1,6 +1,6 @@
 import './reset.css';
 import './style.css';
-import { addDays, differenceInCalendarDays } from 'date-fns';
+import { addDays, differenceInCalendarDays, format } from 'date-fns';
 
 const elem = {
   nav: document.querySelector('.nav'),
@@ -43,11 +43,24 @@ class Task {
     if (isImportant) this.isImportant = isImportant;
   }
 
+  formatDueDate() {
+    switch (this.getDaysLeft()) {
+      case -1:
+        return 'Yesterday';
+      case 0:
+        return 'Today';
+      case 1:
+        return 'Tomorrow';
+      default:
+        return format(this.date, 'PPP');
+    }
+  }
+
   returnHTML() {
     return `
     <li class="main__item${this.isImportant ? ' main__item--important' : ''}">
       <div class="main__item-checkbox"></div>
-      <div class="main__item-duedate">Tomorrow</div>
+      <div class="main__item-duedate">${this.formatDueDate()}</div>
       <div class="main__item-name">${this.title}</div>
       <div class="main__item-description">${this.description}</div>
       <div class="main__item-setting main__item-edit">${icons.edit}</div>
@@ -185,10 +198,10 @@ const app = (function () {
   }
 
   const generateRandomTasks = (project = projects.Uncategorized) => {
-    const taskCount = Math.floor(Math.random() * 2) + 3;
+    const taskCount = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < taskCount; i++) {
-      const isImportant = Math.random() < 1 / 3;
-      const randomOffset = Math.floor(Math.random() * 21) - 2;
+      const isImportant = Math.random() < 1 / 4;
+      const randomOffset = Math.floor(Math.random() * 8) - 2;
       const randomDate = addDays(new Date(), randomOffset);
 
       const titleLength = Math.floor(Math.random() * 3) + 2;
