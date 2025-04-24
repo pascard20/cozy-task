@@ -2,16 +2,19 @@ import './reset.css';
 import './style.css';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 
+const projects = {};
+
 const elem = {
   nav: document.querySelector('.nav'),
   navGroups: document.querySelector('.nav__groups'),
   navProjects: document.querySelector('.nav__projects'),
   mainHeader: document.querySelector('.main__header'),
   mainTasks: document.querySelector('.main__tasks'),
-  taskPopup: document.querySelector('.popup__task')
-}
 
-elem.taskPopup.showModal();
+  get btnNewTask() {
+    return document.querySelector('.main__add-task')
+  }
+}
 
 const icons = {
   folder: `<i class="fa-solid fa-folder"></i>`,
@@ -37,6 +40,114 @@ icons.forProjects = [
   icons.briefcase,
   icons.game
 ]
+
+class PopUp {
+  constructor(title) {
+    this.title = title;
+    this.DOMElement = null;
+    this.elementID = `popup-${title.toLowerCase().replace(' ', '-')}`;
+    this.eventListeners = {
+      '.popup__exit': ['click', this.handleExit.bind(this)],
+      '.popup__form': ['submit', this.handleSubmit.bind(this)]
+    }
+  }
+
+  handleExit() {
+    this.DOMElement.close();
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    this.handleExit()
+  }
+
+  returnHTML() {
+    return `
+    <dialog class="popup popup__task" id="${this.elementID}">
+      <div class="popup__header">
+        <h2 class="popup__title">${this.title}</h2>
+        <div class="popup__exit">x</div>
+      </div>
+
+      <hr class="divider">
+    `;
+  }
+
+  createDOMElement() {
+    if (!this.DOMElement) {
+      document.body.insertAdjacentHTML('beforeend', this.returnHTML());
+      this.DOMElement = document.querySelector(`#${this.elementID}`);
+      this.DOMElement.close();
+    } else console.warn('The DOM element has been already created. Use returnDOMElement() to return it.')
+  }
+
+  returnDOMElement() {
+    if (this.DOMElement) {
+      return this.DOMElement;
+    } else console.warn('The DOM element has not been created yet. Use createDOMElement() to create it.')
+  }
+
+  attachEventListeners() {
+    for (const selector in this.eventListeners) {
+      const [method, handler] = this.eventListeners[selector];
+      this.DOMElement.querySelector(selector)?.addEventListener(method, handler);
+    }
+  }
+
+  initializeDOMElement() {
+    this.createDOMElement();
+    this.attachEventListeners();
+    return this.returnDOMElement();
+  }
+}
+
+class TaskPopUp extends PopUp {
+  returnHTML() {
+    return `
+    ${super.returnHTML()}
+      <form action="#" class="popup__form">
+        <div class="popup__input-title popup__input-area">
+          <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
+          <label for="title"><span>Title</span></label>
+        </div>
+
+        <div class="popup__input-description popup__input-area">
+          <textarea class="popup__input" id="description" name="description" placeholder=""></textarea>
+          <label for="description"><span>Description</span></label>
+        </div>
+
+        <div class="popup__input-area popup__input-project">
+          <select class="popup__input" id="project" name="project">
+            <option value="work">Work</option>
+            <option value="personal">Personal</option>
+            <option value="hobby">Hobby</option>
+          </select>
+          <label for="project"><span>Project</span></label>
+        </div>
+
+        <div class="popup__input-area popup__input-date">
+          <input class="popup__input" type="date" id="dueDate" name="dueDate">
+          <label for="dueDate"><span>Date</span></label>
+        </div>
+
+        <div class="popup__input-area popup__input-isImportant">
+          <label class="isImportant-label" for="isImportant">Important</label>
+          <label class="switch">
+            <input id="isImportant" name="isImportant" type="checkbox">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <button class="popup__btn btn" type="submit">Save task</button>
+      </form>
+    </dialog>`;
+  }
+}
+
+class ProjectPopUP extends PopUp {
+
+}
 
 class Task {
   constructor(title, description = null, date = null, isImportant = false) {
@@ -299,10 +410,28 @@ const app = (function () {
 
   let currentElement;
 
+  // console.log(popups.newTask)
+  // console.log(popups.newTask.querySelector('select'))
+
+  const updateProjectOptions = (selectElement, projects) => {
+    selectElement.innerHTML = '';
+    for (const projectName in projects) {
+      const option = document.createElement('option');
+      option.value = projectName;
+      option.textContent = projectName;
+      selectElement.appendChild(option);
+    }
+  }
+
+  const updatePopups = () => {
+    Object.values(popups).forEach(popup => {
+      updateProjectOptions(popup.querySelector('select'), projects);
+    })
+  }
+
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
-  const projects = {};
   const taskGroups = {
     All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
     Today: new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
@@ -320,6 +449,17 @@ const app = (function () {
   const mainHeader = new MainHeader();
   currentElement = taskGroups.Today;
 
+  const popups = {
+    newTask: (new TaskPopUp('New task')).initializeDOMElement(),
+    editTask: (new TaskPopUp('Edit task')).initializeDOMElement()
+  }
+
+  updatePopups();
   printMain();
+
+  elem.btnNewTask.addEventListener('click', () => {
+    popups.newTask.showModal()
+  });
+
 
 })();

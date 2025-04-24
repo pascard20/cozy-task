@@ -324,6 +324,10 @@ body {
 
 /* ---------------------------------- POPUP --------------------------------- */
 
+dialog:not([open]) {
+  display: none !important;
+}
+
 .popup {
   position: fixed;
   top: 50%;
@@ -441,7 +445,7 @@ select.popup__input {
   grid-template-columns: 2fr 1fr;
   grid-template-rows: repeat(auto-fill, 2.5rem);
   gap: 1.75rem;
-  margin: 1rem 0 4rem;
+  margin: 1rem 0 6.5rem;
 }
 
 .popup__input-description {
@@ -502,9 +506,9 @@ select.popup__input {
     height: 75%;
     margin-left: .25rem;
 
-    &:hover .slider {
+    /* &:hover .slider {
       background-color: var(--colorTextLight);
-    }
+    } */
   }
 
   /* Hide default HTML checkbox */
