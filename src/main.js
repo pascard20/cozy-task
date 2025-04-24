@@ -180,15 +180,32 @@ const app = (function () {
     } else console.warn('This project does not exist!');
   }
 
+  const capitalizeString = string => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   const generateRandomTasks = (project = projects.Uncategorized) => {
-    const taskCount = Math.floor(Math.random() * 2) + 3; // Random number between 5 and 20
+    const taskCount = Math.floor(Math.random() * 2) + 3;
     for (let i = 0; i < taskCount; i++) {
-      const isImportant = Math.random() < 1 / 3; // ~33% chance
+      const isImportant = Math.random() < 1 / 3;
       const randomOffset = Math.floor(Math.random() * 21) - 2;
       const randomDate = addDays(new Date(), randomOffset);
+
+      const titleLength = Math.floor(Math.random() * 3) + 2;
+      const titleIndex = Math.floor(Math.random() * loremIpsumSplit.length);
+
+      const haveDescription = Math.random() < 7 / 8;
+      const descriptionLength = haveDescription ? Math.floor(Math.random() * 10) + 10 : 0;
+      const descriptionIndex = Math.floor(Math.random() * loremIpsumSplit.length);
+
+      const lorem = [...loremIpsumSplit, ...loremIpsumSplit];
+      const taskTitle = capitalizeString(lorem.slice(titleIndex, titleIndex + titleLength).join(' '));
+      const taskDescription = capitalizeString(lorem.slice(descriptionIndex, descriptionIndex + descriptionLength).join(' '));
+
+
       addTask(
-        'Lorem ipsum',
-        'Lorem ipsum dolor sit amet consectetur, adipisicing elit. Perspiciatis, rerum! Doloremque ipsa odit molestias veritatis voluptate odio debitis nisi consectetur?',
+        taskTitle,
+        taskDescription,
         randomDate,
         isImportant,
         project
@@ -258,9 +275,12 @@ const app = (function () {
 
   let currentElement;
 
+  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
+  const loremIpsumSplit = loremIpsum.split(' ');
+
   const projects = {};
   const taskGroups = {
-    All: new TaskGroup('All', icons.globe, () => true),
+    All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
     Today: new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
     'This Week': new TaskGroup('This Week', icons.week, task => {
       const days = task.getDaysLeft();
