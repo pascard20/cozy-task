@@ -3,6 +3,7 @@ import './style.css';
 import { addDays, differenceInCalendarDays } from 'date-fns';
 
 const elem = {
+  nav: document.querySelector('.nav'),
   navGroups: document.querySelector('.nav__groups'),
   navProjects: document.querySelector('.nav__projects'),
   mainHeader: document.querySelector('.main__header'),
@@ -121,7 +122,7 @@ class NavElement extends Counter {
 
   returnHTML() {
     return `
-    <li class="nav__item">
+    <li class="nav__item" id="${this.name}">
       <div class="nav__item-icon">${this.icon}</div>
       <div class="nav__item-name">${this.name}</div>
       ${this.returnCounterHTML()}
@@ -153,29 +154,34 @@ class Project extends NavElement {
 const app = (function () {
 
   const updateTaskGroups = (taskGroups, tasks) => {
-    taskGroups.forEach(taskGroup => {
+    Object.values(taskGroups).forEach(taskGroup => {
       taskGroup.tasks = [];
     })
 
     tasks.forEach(task => {
-      taskGroups.forEach(taskGroup => {
+      Object.values(taskGroups).forEach(taskGroup => {
         if (taskGroup.countRule(task)) taskGroup.tasks.push(task);
       })
     })
   }
 
   const addProject = (name, icon) => {
-    projects.push(new Project(name, icon))
-    updateNav();
+    if (!projects[name]) {
+      projects[name] = new Project(name, icon)
+      updateNav();
+    } else console.warn('Project already exists!');
+
   }
 
-  const addTask = (title, description = null, date = null, isImportant = false, project = projects[0]) => {
-    project.addTask(title, description, date, isImportant);
-    updateNav();
+  const addTask = (title, description = null, date = null, isImportant = false, project = projects.Uncategorized) => {
+    if (project) {
+      project.addTask(title, description, date, isImportant);
+      updateNav();
+    } else console.warn('This project does not exist!');
   }
 
-  const generateRandomTasks = project => {
-    const taskCount = Math.floor(Math.random() * 16) + 5; // Random number between 5 and 20
+  const generateRandomTasks = (project = projects.Uncategorized) => {
+    const taskCount = Math.floor(Math.random() * 2) + 3; // Random number between 5 and 20
     for (let i = 0; i < taskCount; i++) {
       const isImportant = Math.random() < 1 / 3; // ~33% chance
       const randomOffset = Math.floor(Math.random() * 21) - 2;
@@ -191,13 +197,13 @@ const app = (function () {
   }
 
   const testContent = () => {
-    generateRandomTasks(projects[projects.length - 1]);
-    addProject('Work', icons.briefcase);
-    generateRandomTasks(projects[projects.length - 1]);
-    addProject('House', icons.house);
-    generateRandomTasks(projects[projects.length - 1]);
-    addProject('Hobby', icons.game);
-    generateRandomTasks(projects[projects.length - 1]);
+    generateRandomTasks();
+
+    for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
+      addProject(name, icons[icon]);
+      generateRandomTasks(projects[name]);
+    }
+
     generateRandomTasks(deleted);
   }
 
@@ -221,37 +227,54 @@ const app = (function () {
 
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
-    printElements(elem.navGroups, [...taskGroups, deleted]);
-    printElements(elem.navProjects, projects, `<li class="nav__item nav__add-project">+ New project</li>`);
+    printElements(elem.navGroups, [...Object.values(taskGroups), deleted]);
+    printElements(elem.navProjects, Object.values(projects), `<li class="nav__item nav__add-project">+ New project</li>`);
   }
 
   const returnAllTasks = () => {
     const tasks = [];
-    projects.forEach(project => {
+    Object.values(projects).forEach(project => {
       tasks.push(...project.tasks);
     });
     return tasks;
   }
 
+  const findElement = elementID => {
+    const lookup = {
+      ...projects,
+      ...taskGroups,
+      [deleted.name]: deleted
+    }
+    return lookup[elementID];
+  }
+
+  const handleNavClick = event => {
+    const elementID = event.target.closest("li")?.id;
+    currentElement = findElement(elementID);
+    printMain();
+  }
+
+  elem.nav.addEventListener('click', handleNavClick);
+
   let currentElement;
 
-  const projects = [];
-  const taskGroups = [
-    new TaskGroup('All', icons.globe, () => true),
-    new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
-    new TaskGroup('This Week', icons.week, task => {
+  const projects = {};
+  const taskGroups = {
+    All: new TaskGroup('All', icons.globe, () => true),
+    Today: new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
+    'This Week': new TaskGroup('This Week', icons.week, task => {
       const days = task.getDaysLeft();
       return (days >= 0) && (days <= 7);
     }),
-    new TaskGroup('Overdue', icons.clock, task => task.getDaysLeft() < 0),
-    new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
-  ]
+    Overdue: new TaskGroup('Overdue', icons.clock, task => task.getDaysLeft() < 0),
+    Completed: new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
+  }
   const deleted = new Project('Deleted', icons.trash, false, false);
   addProject('Uncategorized', icons.folder);
 
   testContent();
   const mainHeader = new MainHeader();
-  currentElement = taskGroups[1];
+  currentElement = taskGroups.Today;
 
   printMain();
 
