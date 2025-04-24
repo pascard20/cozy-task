@@ -7,8 +7,11 @@ const elem = {
   navGroups: document.querySelector('.nav__groups'),
   navProjects: document.querySelector('.nav__projects'),
   mainHeader: document.querySelector('.main__header'),
-  mainTasks: document.querySelector('.main__tasks')
+  mainTasks: document.querySelector('.main__tasks'),
+  taskPopup: document.querySelector('.popup__task')
 }
+
+elem.taskPopup.showModal();
 
 const icons = {
   folder: `<i class="fa-solid fa-folder"></i>`,
@@ -21,11 +24,19 @@ const icons = {
   globe: `<i class="fa-solid fa-globe"></i>`,
   people: `<i class="fa-solid fa-people-group"></i>`,
   house: `<i class="fa-solid fa-house"></i>`,
-  building: `<i class="fa-solid fa-building"></i>`,
   dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
   briefcase: `<i class="fa-solid fa-briefcase"></i>`,
   game: `<i class="fa-solid fa-gamepad"></i>`
 }
+
+icons.forProjects = [
+  icons.folder,
+  icons.people,
+  icons.house,
+  icons.dumbbell,
+  icons.briefcase,
+  icons.game
+]
 
 class Task {
   constructor(title, description = null, date = null, isImportant = false) {
