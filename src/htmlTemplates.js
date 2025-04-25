@@ -1,110 +1,108 @@
+const getPopUpProjectForm = `
+  <form action="#" class="popup__form" autocomplete="off">
+    <div class="popup__input-title popup__input-area">
+      <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
+      <label for="title"><span>Title</span></label>
+    </div>
+    <div class="popup__input-icon popup__input-area">
+      <p><span>Icon</span></p>
+      <div class="icon-options">
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" checked />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+        <label class="icon-selector">
+          <input type="radio" name="project-icon" value="folder" />
+          <i class="fa-solid fa-folder"></i>
+        </label>
+
+
+      </div>
+
+    </div>
+
+    <button class="popup__btn btn" type="submit">Save project</button>
+  </form>`;
+
+const getPopUpTaskForm = `
+  <form action="#" class="popup__form" autocomplete="off">
+    <div class="popup__input-title popup__input-area">
+      <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
+      <label for="title"><span>Title</span></label>
+    </div>
+
+    <div class="popup__input-description popup__input-area">
+      <textarea class="popup__input" id="description" name="description" placeholder=""></textarea>
+      <label for="description"><span>Description</span></label>
+    </div>
+
+    <div class="popup__input-area popup__input-project">
+      <select class="popup__input" id="project" name="project">
+        <option value="work">Work</option>
+        <option value="personal">Personal</option>
+        <option value="hobby">Hobby</option>
+      </select>
+      <label for="project"><span>Project</span></label>
+    </div>
+
+    <div class="popup__input-area popup__input-date">
+      <input class="popup__input" type="date" id="dueDate" name="dueDate">
+      <label for="dueDate"><span>Date</span></label>
+    </div>
+
+    <div class="popup__input-area popup__input-isImportant">
+      <label class="isImportant-label" for="isImportant">Important</label>
+      <label class="switch">
+        <input id="isImportant" name="isImportant" type="checkbox">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <button class="popup__btn btn" type="submit">Save task</button>
+  </form>`;
+
+const popUpSettings = {
+  task: getPopUpTaskForm,
+  project: getPopUpProjectForm
+}
+
 export default {
-  getPopUpHeader(popUpType, popUpTitle, popUpID) {
+  getPopUp(popUpType, popUpTitle, popUpID) {
     return `
     <dialog class="popup popup__${popUpType}" id="${popUpID}">
       <div class="popup__header">
         <h2 class="popup__title">${popUpTitle}</h2>
         <div class="popup__exit">x</div>
       </div>
-
       <hr class="divider">
-    `;
-  },
-
-  getPopUpProjectForm() {
-    return `
-      <form action="#" class="popup__form" autocomplete="off">
-        <div class="popup__input-title popup__input-area">
-          <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
-          <label for="title"><span>Title</span></label>
-        </div>
-        <div class="popup__input-icon popup__input-area">
-          <p><span>Icon</span></p>
-          <div class="icon-options">
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" checked />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-            <label class="icon-selector">
-              <input type="radio" name="project-icon" value="folder" />
-              <i class="fa-solid fa-folder"></i>
-            </label>
-
-
-          </div>
-
-        </div>
-
-        <button class="popup__btn btn" type="submit">Save project</button>
-      </form>
+      ${popUpSettings[popUpType]}
     </dialog>
-    `
-  },
-
-  getPopUpTaskForm() {
-    return `
-        <form action="#" class="popup__form" autocomplete="off">
-          <div class="popup__input-title popup__input-area">
-            <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
-            <label for="title"><span>Title</span></label>
-          </div>
-
-          <div class="popup__input-description popup__input-area">
-            <textarea class="popup__input" id="description" name="description" placeholder=""></textarea>
-            <label for="description"><span>Description</span></label>
-          </div>
-
-          <div class="popup__input-area popup__input-project">
-            <select class="popup__input" id="project" name="project">
-              <option value="work">Work</option>
-              <option value="personal">Personal</option>
-              <option value="hobby">Hobby</option>
-            </select>
-            <label for="project"><span>Project</span></label>
-          </div>
-
-          <div class="popup__input-area popup__input-date">
-            <input class="popup__input" type="date" id="dueDate" name="dueDate">
-            <label for="dueDate"><span>Date</span></label>
-          </div>
-
-          <div class="popup__input-area popup__input-isImportant">
-            <label class="isImportant-label" for="isImportant">Important</label>
-            <label class="switch">
-              <input id="isImportant" name="isImportant" type="checkbox">
-              <span class="slider"></span>
-            </label>
-          </div>
-
-          <button class="popup__btn btn" type="submit">Save task</button>
-        </form>
-      </dialog>
     `;
   },
 
