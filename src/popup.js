@@ -23,8 +23,8 @@ class PopUp {
     this.handleExit()
   }
 
-  returnHTML() {
-    return templates.getPopUpHeader(this.title, this.elementID);
+  returnHTML(popUpType) {
+    return templates.getPopUpHeader(popUpType, this.title, this.elementID);
   }
 
   createDOMElement() {
@@ -82,7 +82,7 @@ class PopUp {
 
 export class TaskPopUp extends PopUp {
   returnHTML() {
-    return `${super.returnHTML()} ${templates.getPopUpTaskForm()}`;
+    return `${super.returnHTML('task')} ${templates.getPopUpTaskForm()}`;
   }
 }
 

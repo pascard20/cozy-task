@@ -1,7 +1,7 @@
 export default {
-  getPopUpHeader(popUpTitle, popUpID) {
+  getPopUpHeader(popUpType, popUpTitle, popUpID) {
     return `
-    <dialog class="popup popup__task" id="${popUpID}">
+    <dialog class="popup popup__${popUpType}" id="${popUpID}">
       <div class="popup__header">
         <h2 class="popup__title">${popUpTitle}</h2>
         <div class="popup__exit">x</div>
@@ -9,6 +9,62 @@ export default {
 
       <hr class="divider">
     `;
+  },
+
+  getPopUpProjectForm() {
+    return `
+      <form action="#" class="popup__form" autocomplete="off">
+        <div class="popup__input-title popup__input-area">
+          <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
+          <label for="title"><span>Title</span></label>
+        </div>
+        <div class="popup__input-icon popup__input-area">
+          <p><span>Icon</span></p>
+          <div class="icon-options">
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" checked />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+            <label class="icon-selector">
+              <input type="radio" name="project-icon" value="folder" />
+              <i class="fa-solid fa-folder"></i>
+            </label>
+
+
+          </div>
+
+        </div>
+
+        <button class="popup__btn btn" type="submit">Save project</button>
+      </form>
+    </dialog>
+    `
   },
 
   getPopUpTaskForm() {
