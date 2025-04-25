@@ -193,12 +193,16 @@ const app = (function () {
   /* ------------------------- Initialize task groups ------------------------- */
   const taskGroups = {
     All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
-    Today: new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
+    Today: new TaskGroup('Today', icons.day, task => {
+      return task.getDaysLeft() === 0 && !task.isCompleted;
+    }),
     'This Week': new TaskGroup('This Week', icons.week, task => {
       const days = task.getDaysLeft();
-      return (days >= 0) && (days <= 7);
+      return ((days >= 0) && (days <= 7)) && !task.isCompleted;
     }),
-    Overdue: new TaskGroup('Overdue', icons.clock, task => task.getDaysLeft() < 0),
+    Overdue: new TaskGroup('Overdue', icons.clock, task => {
+      return task.getDaysLeft() < 0 && !task.isCompleted;
+    }),
     Completed: new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
   }
   const deleted = new Project('Deleted', icons.trash, false, false);

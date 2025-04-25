@@ -33,7 +33,8 @@ body {
 
 .nav {
   background: var(--colorNav);
-  width: 320px;
+  min-width: 320px;
+
   height: 100%;
   padding: 3rem 2rem;
   display: flex;

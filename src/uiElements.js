@@ -10,9 +10,8 @@ class Counter {
 
 export class MainHeader extends Counter {
   returnCounterHTML(currentElement) {
-    const importantTasks = currentElement.countImportantTasks();
-    const allTasks = currentElement.tasks.length;
-    return super.returnCounterHTML('main__count', false, importantTasks, allTasks - importantTasks);
+    const { defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks();
+    return super.returnCounterHTML('main__count', false, importantTaskCount, defaultTaskCount);
   }
 
   returnHTML(currentElement) {
@@ -39,12 +38,29 @@ class NavElement extends Counter {
     return this.tasks.reduce((count, item) => item.isImportant ? count + 1 : count, 0)
   }
 
+  countPendingTasks() {
+    const taskCount = {
+      defaultTaskCount: 0,
+      importantTaskCount: 0
+    }
+    // console.log(this.tasks)
+    this.tasks.forEach(task => {
+      if (!task.isCompleted) {
+        if (task.isImportant) {
+          taskCount.importantTaskCount += 1;
+        } else taskCount.defaultTaskCount += 1;
+      }
+    })
+    return taskCount;
+  }
+
   returnCounterHTML() {
+    const { defaultTaskCount, importantTaskCount } = this.countPendingTasks();
     return this.isCounting ? super.returnCounterHTML(
       'nav__count',
       this.isEditable,
-      this.countImportantTasks(),
-      this.tasks.length - this.countImportantTasks()
+      importantTaskCount,
+      defaultTaskCount
     ) : '';
   }
 
