@@ -5,6 +5,7 @@
   --colorNav: #F7F4F0;
   --colorAccent: #c03d3d;
   --colorAccentLight: #D35D5C;
+  --colorAccentInactive: #8f5d5d;
   --colorTextDark: #2e2828;
   --colorText: #4D4242;
   --colorTextLight: #827A79;
@@ -324,8 +325,12 @@ body {
 
 .main__item.completed {
   --colorComplete: var(--colorTextLight);
-
   text-decoration: line-through;
+
+  &.main__item--important {
+    --colorComplete: var(--colorAccentInactive);
+  }
+
 
   &,
   &>* {
