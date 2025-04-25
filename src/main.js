@@ -1,45 +1,10 @@
 import './reset.css';
 import './style.css';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
+import { capitalizeString } from './utils.js';
+import { elem, icons } from './globals.js'
 
 const projects = {};
-
-const elem = {
-  nav: document.querySelector('.nav'),
-  navGroups: document.querySelector('.nav__groups'),
-  navProjects: document.querySelector('.nav__projects'),
-  mainHeader: document.querySelector('.main__header'),
-  mainTasks: document.querySelector('.main__tasks'),
-
-  get btnNewTask() {
-    return document.querySelector('.main__add-task')
-  }
-}
-
-const icons = {
-  folder: `<i class="fa-solid fa-folder"></i>`,
-  trash: `<i class="fa-solid fa-trash"></i>`,
-  day: `<i class="fa-solid fa-calendar-day"></i>`,
-  week: `<i class="fa-solid fa-calendar-week"></i>`,
-  edit: `<i class="fa-solid fa-pen-to-square"></i>`,
-  clock: `<i class="fa-solid fa-clock"></i>`,
-  check: `<i class="fa-solid fa-circle-check"></i>`,
-  globe: `<i class="fa-solid fa-globe"></i>`,
-  people: `<i class="fa-solid fa-people-group"></i>`,
-  house: `<i class="fa-solid fa-house"></i>`,
-  dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
-  briefcase: `<i class="fa-solid fa-briefcase"></i>`,
-  game: `<i class="fa-solid fa-gamepad"></i>`
-}
-
-icons.forProjects = [
-  icons.folder,
-  icons.people,
-  icons.house,
-  icons.dumbbell,
-  icons.briefcase,
-  icons.game
-]
 
 class PopUp {
   constructor(title) {
@@ -341,10 +306,6 @@ const app = (function () {
     } else console.warn('This project does not exist!');
   }
 
-  const capitalizeString = string => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
-
   const generateRandomTasks = (project = projects.Uncategorized) => {
     const taskCount = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < taskCount; i++) {
@@ -399,17 +360,19 @@ const app = (function () {
   }
 
   const printMain = () => {
-    elem.btnNewTask?.removeEventListener('click', handleCreateTask);
-
-    elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
-    elem.mainTasks.innerHTML = '';
     if (currentElement) {
-      currentElement.tasks.forEach(task => {
-        elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML())
-      })
-    }
+      elem.btnNewTask?.removeEventListener('click', handleCreateTask);
 
-    elem.btnNewTask.addEventListener('click', handleCreateTask);
+      elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
+      elem.mainTasks.innerHTML = '';
+      if (currentElement) {
+        currentElement.tasks.forEach(task => {
+          elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML())
+        })
+      }
+
+      elem.btnNewTask?.addEventListener('click', handleCreateTask);
+    }
   }
 
   const updateNav = () => {
