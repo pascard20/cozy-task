@@ -1,0 +1,45 @@
+import templates from './htmlTemplates.js';
+import { differenceInCalendarDays, format } from 'date-fns';
+import { generateID } from './utils.js';
+import { icons } from './globals.js';
+
+export class Task {
+  constructor(title, description = null, date = null, isImportant = false) {
+    this.id = generateID();
+    this.title = title;
+    this.description = description;
+    this.date = date;
+    this.isImportant = isImportant;
+    this.isCompleted = false;
+  }
+
+  update(title = null, description = null, date = null, isImportant = false) {
+    if (title) this.title = title;
+    if (description) this.description = description;
+    if (date) this.date = date;
+    if (isImportant) this.isImportant = isImportant;
+  }
+
+  formatDueDate() {
+    switch (this.getDaysLeft()) {
+      case null:
+        return '';
+      case -1:
+        return 'Yesterday';
+      case 0:
+        return 'Today';
+      case 1:
+        return 'Tomorrow';
+      default:
+        return format(this.date, 'PPP');
+    }
+  }
+
+  returnHTML() {
+    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted, icons.edit, icons.trash);
+  }
+
+  getDaysLeft() {
+    return this.date ? differenceInCalendarDays(new Date(this.date), new Date()) : null;
+  }
+}
