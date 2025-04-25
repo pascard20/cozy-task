@@ -45,11 +45,45 @@ class PopUp {
   constructor(title) {
     this.title = title;
     this.DOMElement = null;
+    this.currentData = null;
     this.elementID = `popup-${title.toLowerCase().replace(' ', '-')}`;
-    this.eventListeners = {
-      '.popup__exit': ['click', this.handleExit.bind(this)],
-      '.popup__form': ['submit', this.handleSubmit.bind(this)]
+    this.eventListeners = [
+      { selector: '.popup__exit', event: 'click', handler: this.handleExit.bind(this) },
+      { selector: '.popup__form', event: 'submit', handler: this.handleSubmit.bind(this) },
+    ];
+  }
+
+  waitForUserInput(defaultProject = null) {
+    const form = this.DOMElement.querySelector('form');
+    form.reset()
+
+    const select = this.DOMElement.querySelector('select');
+    if (defaultProject) {
+      const isValid = [...select.options].some(option => option.value === defaultProject);
+      select.value = isValid ? defaultProject : Object.keys(projects)[0];
     }
+    this.DOMElement.showModal();
+
+    return new Promise((resolve, reject) => {
+      const cleanup = () => {
+        this.DOMElement.removeEventListener('submit', onSubmit);
+        this.DOMElement.removeEventListener('close', onClose);
+      };
+
+      const onSubmit = () => {
+        console.log('Exporting')
+        cleanup();
+        resolve(this.currentData);
+      };
+
+      const onClose = () => {
+        cleanup();
+        reject('Popup closed without submitting');
+      };
+
+      this.DOMElement.addEventListener('submit', onSubmit, { once: true });
+      this.DOMElement.addEventListener('close', onClose, { once: true });
+    });
   }
 
   handleExit() {
@@ -57,8 +91,9 @@ class PopUp {
   }
 
   handleSubmit(event) {
+    console.log('Saving')
     event.preventDefault();
-    const formData = new FormData(event.target);
+    this.currentData = new FormData(event.target);
     this.handleExit()
   }
 
@@ -78,27 +113,19 @@ class PopUp {
     if (!this.DOMElement) {
       document.body.insertAdjacentHTML('beforeend', this.returnHTML());
       this.DOMElement = document.querySelector(`#${this.elementID}`);
-      this.DOMElement.close();
-    } else console.warn('The DOM element has been already created. Use returnDOMElement() to return it.')
-  }
-
-  returnDOMElement() {
-    if (this.DOMElement) {
-      return this.DOMElement;
-    } else console.warn('The DOM element has not been created yet. Use createDOMElement() to create it.')
+      // this.DOMElement.close();
+    }
   }
 
   attachEventListeners() {
-    for (const selector in this.eventListeners) {
-      const [method, handler] = this.eventListeners[selector];
-      this.DOMElement.querySelector(selector)?.addEventListener(method, handler);
-    }
+    this.eventListeners.forEach(({ selector, event, handler }) => {
+      this.DOMElement.querySelector(selector)?.addEventListener(event, handler);
+    })
   }
 
   initializeDOMElement() {
     this.createDOMElement();
     this.attachEventListeners();
-    return this.returnDOMElement();
   }
 }
 
@@ -367,7 +394,14 @@ const app = (function () {
     section.insertAdjacentHTML('beforeend', additionalHTML);
   }
 
+  const handleNewTask = () => {
+    updatePopups();
+    addNewTask();
+  }
+
   const printMain = () => {
+    elem.btnNewTask?.removeEventListener('click', handleNewTask);
+
     elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
     elem.mainTasks.innerHTML = '';
     if (currentElement) {
@@ -375,6 +409,8 @@ const app = (function () {
         elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML())
       })
     }
+
+    elem.btnNewTask.addEventListener('click', handleNewTask);
   }
 
   const updateNav = () => {
@@ -425,7 +461,7 @@ const app = (function () {
 
   const updatePopups = () => {
     Object.values(popups).forEach(popup => {
-      updateProjectOptions(popup.querySelector('select'), projects);
+      updateProjectOptions(popup.DOMElement.querySelector('select'), projects);
     })
   }
 
@@ -450,16 +486,29 @@ const app = (function () {
   currentElement = taskGroups.Today;
 
   const popups = {
-    newTask: (new TaskPopUp('New task')).initializeDOMElement(),
-    editTask: (new TaskPopUp('Edit task')).initializeDOMElement()
+    newTask: new TaskPopUp('New task'),
+    editTask: new TaskPopUp('Edit task')
+  }
+
+  Object.values(popups).forEach(popup => {
+    popup.initializeDOMElement();
+  })
+
+  async function addNewTask() {
+    const popup = popups.newTask;
+
+    try {
+      const data = await popup.waitForUserInput(currentElement.name);
+      console.log('User submitted:', data);
+      // 👇 create your task here
+      // createTask(data);
+    } catch (e) {
+      console.log('User canceled:', e);
+      // 👇 do nothing, user closed modal
+    }
   }
 
   updatePopups();
   printMain();
-
-  elem.btnNewTask.addEventListener('click', () => {
-    popups.newTask.showModal()
-  });
-
 
 })();
