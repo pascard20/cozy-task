@@ -2,7 +2,8 @@ import './reset.css';
 import './style.css';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
 import { capitalizeString } from './utils.js';
-import { elem, icons } from './globals.js'
+import { elem, icons } from './globals.js';
+import templates from './htmlTemplates.js';
 
 const projects = {};
 
@@ -29,15 +30,7 @@ class PopUp {
   }
 
   returnHTML() {
-    return `
-    <dialog class="popup popup__task" id="${this.elementID}">
-      <div class="popup__header">
-        <h2 class="popup__title">${this.title}</h2>
-        <div class="popup__exit">x</div>
-      </div>
-
-      <hr class="divider">
-    `;
+    return templates.getPopUpHeader(this.title, this.elementID);
   }
 
   createDOMElement() {
@@ -95,49 +88,11 @@ class PopUp {
 
 class TaskPopUp extends PopUp {
   returnHTML() {
-    return `
-    ${super.returnHTML()}
-      <form action="#" class="popup__form">
-        <div class="popup__input-title popup__input-area">
-          <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
-          <label for="title"><span>Title</span></label>
-        </div>
-
-        <div class="popup__input-description popup__input-area">
-          <textarea class="popup__input" id="description" name="description" placeholder=""></textarea>
-          <label for="description"><span>Description</span></label>
-        </div>
-
-        <div class="popup__input-area popup__input-project">
-          <select class="popup__input" id="project" name="project">
-            <option value="work">Work</option>
-            <option value="personal">Personal</option>
-            <option value="hobby">Hobby</option>
-          </select>
-          <label for="project"><span>Project</span></label>
-        </div>
-
-        <div class="popup__input-area popup__input-date">
-          <input class="popup__input" type="date" id="dueDate" name="dueDate">
-          <label for="dueDate"><span>Date</span></label>
-        </div>
-
-        <div class="popup__input-area popup__input-isImportant">
-          <label class="isImportant-label" for="isImportant">Important</label>
-          <label class="switch">
-            <input id="isImportant" name="isImportant" type="checkbox">
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <button class="popup__btn btn" type="submit">Save task</button>
-      </form>
-    </dialog>`;
+    return `${super.returnHTML()} ${templates.getPopUpTaskForm()}`;
   }
 }
 
 class ProjectPopUP extends PopUp {
-
 }
 
 class Task {
@@ -170,15 +125,7 @@ class Task {
   }
 
   returnHTML() {
-    return `
-    <li class="main__item${this.isImportant ? ' main__item--important' : ''}">
-      <div class="main__item-checkbox"></div>
-      <div class="main__item-duedate">${this.formatDueDate()}</div>
-      <div class="main__item-name">${this.title}</div>
-      <div class="main__item-description">${this.description}</div>
-      <div class="main__item-setting main__item-edit">${icons.edit}</div>
-      <div class="main__item-setting main__item-delete">${icons.trash}</div>
-    </li>`
+    return templates.getTask(this.title, this.description, this.formatDueDate(), this.isImportant, icons.edit, icons.trash);
   }
 
   getDaysLeft() {
@@ -188,10 +135,7 @@ class Task {
 
 class Counter {
   returnCounterHTML(htmlClass, isEditable, importantTasksCount, defaultTasksCount) {
-    return `<div class="${htmlClass} count${isEditable ? '' : ' ignore'}">
-      ${importantTasksCount ? `<div class="count--important">${importantTasksCount}</div>` : ''}
-      ${defaultTasksCount ? `<div class="count--default">${defaultTasksCount}</div>` : ''}
-    </div>`;
+    return templates.getTaskCounter(htmlClass, isEditable, importantTasksCount, defaultTasksCount)
   }
 }
 
@@ -203,10 +147,7 @@ class MainHeader extends Counter {
   }
 
   returnHTML(currentElement) {
-    return currentElement ? `
-    <h1 class="main__title">${currentElement.name}</h1>
-    ${this.returnCounterHTML(currentElement)}
-    <div class="main__add-task">+ New task</div>` : '';
+    return currentElement ? templates.getMainHeader(currentElement.name, this.returnCounterHTML(currentElement)) : '';
   }
 }
 
@@ -239,23 +180,12 @@ class NavElement extends Counter {
   }
 
   returnSettingsHTML() {
-    return this.isEditable ? `
-    <div class="nav__item-settings">
-      <div class="nav__item-setting nav__item-edit">${icons.edit}</div>
-      <div class="nav__item-setting nav__item-delete">${icons.trash}</div>
-    </div>` : '';
+    return this.isEditable ? templates.getNavElementSettings(icons.edit, icons.trash) : '';
   }
 
   returnHTML() {
-    return `
-    <li class="nav__item" id="${this.name}">
-      <div class="nav__item-icon">${this.icon}</div>
-      <div class="nav__item-name">${this.name}</div>
-      ${this.returnCounterHTML()}
-      ${this.returnSettingsHTML()}
-    </li>`
+    return templates.getNavElement(this.name, this.icon, this.returnCounterHTML(), this.returnSettingsHTML());
   }
-
 }
 
 class TaskGroup extends NavElement {
@@ -378,7 +308,7 @@ const app = (function () {
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
     printElements(elem.navGroups, [...Object.values(taskGroups), deleted]);
-    printElements(elem.navProjects, Object.values(projects), `<li class="nav__item nav__add-project">+ New project</li>`);
+    printElements(elem.navProjects, Object.values(projects), templates.getNewProjectButton());
   }
 
   const returnAllTasks = () => {
@@ -458,7 +388,7 @@ const app = (function () {
     popup.initializeDOMElement();
   })
 
-  /* ------------------------- Initialize test content ------------------------ */
+  /* -------------------------- Generate test content ------------------------- */
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
