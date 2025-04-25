@@ -357,7 +357,7 @@ dialog:not([open]) {
   left: 50%;
   transform: translate(-50%, -55%);
   background: var(--colorBackground);
-  padding: 1.5rem 2rem;
+  padding: 1.75rem 2.5rem;
   color: var(--colorText);
   display: flex;
   width: fit-content;
@@ -472,6 +472,8 @@ select.popup__input {
   gap: 1.75rem;
   margin: 1rem 0 5.5rem;
 }
+
+/* ------------------------------ POPUP PROJECT ----------------------------- */
 
 .popup__project .popup__form {
   display: flex;
@@ -682,4 +684,74 @@ select.popup__input {
     -ms-transform: translateX(calc(100% + .125rem));
     transform: translateX(calc(100% + .125rem));
   }
+}
+
+/* ------------------------------ POPUP DELETE ------------------------------ */
+
+.popup__delete {
+
+  .popup__btn {
+    position: static;
+    transform: none;
+  }
+
+  p {
+    text-align: center;
+  }
+}
+
+.popup__info-upper {
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+.popup__info-lower {
+  font-size: 1rem;
+  color: var(--colorTextLight)
+}
+
+.popup__body {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  margin-top: 1rem;
+  /* padding: 0 1rem; */
+  width: min-content;
+}
+
+.popup__buttons {
+  display: flex;
+  gap: 2rem;
+  width: 100%;
+  justify-content: center;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+
+  .btn {
+    margin: 0;
+  }
+}
+
+.btn.btn--light {
+  background: var(--colorBackground);
+  border-color: var(--colorText);
+  color: var(--colorText);
+
+  &:hover {
+    background-color: var(--colorTextSubtle);
+  }
+}
+
+.btn {
+  border: 1px solid var(--colorText);
+
+  &:hover {
+    border-color: var(--colorTextLight);
+  }
+}
+
+/* ---------------------------------- UTILS --------------------------------- */
+
+.bold {
+  font-weight: bold;
 }

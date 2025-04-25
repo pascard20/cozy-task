@@ -1,4 +1,4 @@
-const getPopUpProjectForm = `
+const popUpProjectForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
       <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
@@ -50,7 +50,7 @@ const getPopUpProjectForm = `
     <button class="popup__btn btn" type="submit">Save project</button>
   </form>`;
 
-const getPopUpTaskForm = `
+const popUpTaskForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
       <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
@@ -87,10 +87,39 @@ const getPopUpTaskForm = `
     <button class="popup__btn btn" type="submit">Save task</button>
   </form>`;
 
-const popUpSettings = {
-  task: getPopUpTaskForm,
-  project: getPopUpProjectForm
+const popUpDeleteSettings = {
+  task: 'This action will <span class="bold">remove this task permanently.</span>',
+  project: 'This action will <span class="bold">remove this project and all its tasks permanently.</span>'
 }
+
+const getPopUpDeleteBody = popUpType => {
+  return `
+    <div class="popup popup__delete">
+      <div class="popup__header">
+        <h2 class="popup__title">Are you sure?</h2>
+        <div class="popup__exit">x</div>
+      </div>
+      <hr class="divider">
+      <div class="popup__body">
+        <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> this ${popUpType}?</p>
+        <p class="popup__info-lower">${popUpDeleteSettings[popUpType]}</p>
+        <div class="popup__buttons">
+          <button class="popup__btn btn btn--light" type="submit">Cancel</button>
+          <button class="popup__btn btn" type="submit">Delete task</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const popUpSettings = {
+  task: popUpTaskForm,
+  project: popUpProjectForm,
+  taskDelete: getPopUpDeleteBody('task'),
+  projectDelete: getPopUpDeleteBody('project')
+}
+
+/* --------------------------------- EXPORTS -------------------------------- */
 
 export default {
   getPopUp(popUpType, popUpTitle, popUpID) {
