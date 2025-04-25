@@ -4,7 +4,7 @@ import { addDays } from 'date-fns';
 import { capitalizeString } from './utils.js';
 import { projects, elem, icons } from './globals.js';
 import templates from './htmlTemplates.js';
-import { TaskPopUp } from './popup.js';
+import { TaskPopUp, ProjectPopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 
 const app = (function () {
@@ -25,17 +25,19 @@ const app = (function () {
 
   const addProject = (name, icon) => {
     if (!projects[name]) {
-      projects[name] = new Project(name, icon)
+      const newProject = new Project(name, icon);
+      projects[name] = newProject;
       updateNav();
+      return newProject;
     } else console.warn('Project already exists!');
 
   }
 
   const addTask = (title, description = null, date = null, isImportant = false, project = projects.Uncategorized) => {
     if (project) {
-      project.addTask(title, description, date, isImportant);
-      // console.log(project)
+      const newTask = project.addTask(title, description, date, isImportant);
       refreshApp();
+      return newTask;
     } else console.warn('This project does not exist!');
   }
 
@@ -112,24 +114,29 @@ const app = (function () {
 
   const printMain = () => {
     if (currentElement) {
-      elem.btnNewTask?.removeEventListener('click', handleCreateTask);
+      // elem.btnNewTask?.removeEventListener('click', handleCreateTask);
 
       elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
       elem.mainTasks.innerHTML = '';
       if (currentElement) {
         currentElement.tasks.forEach(task => {
-          elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML())
+          elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
 
-      elem.btnNewTask?.addEventListener('click', handleCreateTask);
+      elem.btnNewTask?.addEventListener('click', handleNewTask);
     }
   }
 
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
+
+    // elem.btnNewProject?.removeEventListener('click', handleCreateProject);
+
     printElements(elem.navGroups, [...Object.values(taskGroups), deleted]);
     printElements(elem.navProjects, Object.values(projects), templates.getNewProjectButton());
+
+    elem.btnNewProject?.addEventListener('click', handleNewProject);
   }
 
   const refreshApp = () => {
@@ -138,12 +145,14 @@ const app = (function () {
   }
 
   const updateProjectOptions = (selectElement, projects) => {
-    selectElement.innerHTML = '';
-    for (const projectName in projects) {
-      const option = document.createElement('option');
-      option.value = projectName;
-      option.textContent = projectName;
-      selectElement.appendChild(option);
+    if (selectElement) {
+      selectElement.innerHTML = '';
+      for (const projectName in projects) {
+        const option = document.createElement('option');
+        option.value = projectName;
+        option.textContent = projectName;
+        selectElement.appendChild(option);
+      }
     }
   }
 
@@ -161,20 +170,31 @@ const app = (function () {
     printMain();
   }
 
-  const handleCreateTask = () => {
-    updatePopups();
-    handleNewTask();
+  async function handleNewProject() {
+    const newProject = await handleNewFromInput(popups.newProject, data => {
+      return addProject(data.get('title'), icons[data.get('project-icon')]);
+    })
+
+    if (newProject) currentElement = newProject;
+    printMain();
+
   }
 
-  async function handleNewTask() {
-    const popup = popups.newTask;
+  function handleNewTask() {
+    updatePopups();
+    handleNewFromInput(popups.newTask, data => {
+      return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')]);
+    }, currentElement.name)
+    refreshApp();
+  }
 
+  async function handleNewFromInput(popup, createFunction, defaultProject = null) {
     try {
-      const data = await popup.waitForUserInput(currentElement.name);
+      const data = await popup.waitForUserInput(defaultProject);
       console.log('User submitted:', data);
-      addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')]);
-    } catch (e) {
-      console.log('User canceled:', e);
+      return createFunction(data);
+    } catch (event) {
+      console.log('User canceled:', event);
     }
   }
 
@@ -212,8 +232,9 @@ const app = (function () {
 
   /* ---------------------------- Initialize popups --------------------------- */
   const popups = {
-    newTask: new TaskPopUp('New task'),
-    editTask: new TaskPopUp('Edit task')
+    newTask: new TaskPopUp('newTask', 'New task'),
+    editTask: new TaskPopUp('editTask', 'Edit task'),
+    newProject: new ProjectPopUp('newProject', 'New project')
   }
 
   Object.values(popups).forEach(popup => {

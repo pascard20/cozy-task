@@ -8,7 +8,11 @@ export const elem = {
   mainTasks: document.querySelector('.main__tasks'),
 
   get btnNewTask() {
-    return document.querySelector('.main__add-task')
+    return document.querySelector('.main__add-task');
+  },
+
+  get btnNewProject() {
+    return document.querySelector('.nav__add-project');
   }
 }
 

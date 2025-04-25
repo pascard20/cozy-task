@@ -94,19 +94,12 @@ const popUpDeleteSettings = {
 
 const getPopUpDeleteBody = popUpType => {
   return `
-    <div class="popup popup__delete">
-      <div class="popup__header">
-        <h2 class="popup__title">Are you sure?</h2>
-        <div class="popup__exit">x</div>
-      </div>
-      <hr class="divider">
-      <div class="popup__body">
-        <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> this ${popUpType}?</p>
-        <p class="popup__info-lower">${popUpDeleteSettings[popUpType]}</p>
-        <div class="popup__buttons">
-          <button class="popup__btn btn btn--light" type="submit">Cancel</button>
-          <button class="popup__btn btn" type="submit">Delete task</button>
-        </div>
+    <div class="popup__body">
+      <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> this ${popUpType}?</p>
+      <p class="popup__info-lower">${popUpDeleteSettings[popUpType]}</p>
+      <div class="popup__buttons">
+        <button class="popup__btn btn btn--light" type="submit">Cancel</button>
+        <button class="popup__btn btn" type="submit">Delete task</button>
       </div>
     </div>
   `;
@@ -122,9 +115,10 @@ const popUpSettings = {
 /* --------------------------------- EXPORTS -------------------------------- */
 
 export default {
-  getPopUp(popUpType, popUpTitle, popUpID) {
+  getPopUp(popUpType, popUpClass, popUpTitle, popUpID) {
+    if (!popUpClass) popUpClass = popUpType;
     return `
-    <dialog class="popup popup__${popUpType}" id="${popUpID}">
+    <dialog class="popup popup__${popUpClass}" id="${popUpID}">
       <div class="popup__header">
         <h2 class="popup__title">${popUpTitle}</h2>
         <div class="popup__exit">x</div>

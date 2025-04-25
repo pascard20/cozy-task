@@ -2,11 +2,12 @@ import templates from './htmlTemplates.js';
 import { projects } from './globals.js';
 
 class PopUp {
-  constructor(title) {
-    this.title = title;
+  constructor(name, headerContent) {
+    this.name = name;
+    this.headerContent = headerContent;
     this.DOMElement = null;
     this.currentData = null;
-    this.elementID = `popup-${title.toLowerCase().replace(' ', '-')}`;
+    // this.elementID = `popup-${title.toLowerCase().replace(' ', '-')}`;
     this.eventListeners = [
       { selector: '.popup__exit', event: 'click', handler: this.handleExit.bind(this) },
       { selector: '.popup__form', event: 'submit', handler: this.handleSubmit.bind(this) },
@@ -23,14 +24,14 @@ class PopUp {
     this.handleExit()
   }
 
-  returnHTML(popUpType) {
-    return templates.getPopUp(popUpType, this.title, this.elementID);
+  returnHTML(popUpType, popUpClass) {
+    return templates.getPopUp(popUpType, popUpClass = null, this.headerContent, this.name);
   }
 
   createDOMElement() {
     if (!this.DOMElement) {
       document.body.insertAdjacentHTML('beforeend', this.returnHTML());
-      this.DOMElement = document.querySelector(`#${this.elementID}`);
+      this.DOMElement = document.querySelector(`#${this.name}`);
     }
   }
 
@@ -86,5 +87,8 @@ export class TaskPopUp extends PopUp {
   }
 }
 
-// class ProjectPopUP extends PopUp {
-// }
+export class ProjectPopUp extends PopUp {
+  returnHTML() {
+    return super.returnHTML('project');
+  }
+}

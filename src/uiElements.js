@@ -84,7 +84,9 @@ export class TaskGroup extends NavElement {
 
 export class Project extends NavElement {
   addTask(title, description = null, date = null, isImportant = false) {
-    this.tasks.push(new Task(title, description, date, isImportant))
+    const newTask = new Task(title, description, date, isImportant);
+    this.tasks.push(newTask);
+    return newTask;
   }
 
   // moveTask(task, destination) {
