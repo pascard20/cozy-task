@@ -13,7 +13,7 @@ export default {
 
   getPopUpTaskForm() {
     return `
-        <form action="#" class="popup__form">
+        <form action="#" class="popup__form" autocomplete="off">
           <div class="popup__input-title popup__input-area">
             <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
             <label for="title"><span>Title</span></label>

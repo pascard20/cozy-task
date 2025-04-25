@@ -113,6 +113,8 @@ class Task {
 
   formatDueDate() {
     switch (this.getDaysLeft()) {
+      case null:
+        return '';
       case -1:
         return 'Yesterday';
       case 0:
@@ -129,7 +131,7 @@ class Task {
   }
 
   getDaysLeft() {
-    return differenceInCalendarDays(new Date(this.date), new Date());
+    return this.date ? differenceInCalendarDays(new Date(this.date), new Date()) : null;
   }
 }
 
@@ -209,6 +211,8 @@ class Project extends NavElement {
 
 const app = (function () {
 
+  /* ---------------------------- App functionality --------------------------- */
+
   const updateTaskGroups = (taskGroups, tasks) => {
     Object.values(taskGroups).forEach(taskGroup => {
       taskGroup.tasks = [];
@@ -232,9 +236,12 @@ const app = (function () {
   const addTask = (title, description = null, date = null, isImportant = false, project = projects.Uncategorized) => {
     if (project) {
       project.addTask(title, description, date, isImportant);
-      updateNav();
+      // console.log(project)
+      refreshApp();
     } else console.warn('This project does not exist!');
   }
+
+  /* ------------------------------ Test content ------------------------------ */
 
   const generateRandomTasks = (project = projects.Uncategorized) => {
     const taskCount = Math.floor(Math.random() * 3) + 3;
@@ -276,17 +283,33 @@ const app = (function () {
     generateRandomTasks(deleted);
   }
 
+  /* --------------------------------- Helpers -------------------------------- */
+
+  const returnAllTasks = () => {
+    const tasks = [];
+    Object.values(projects).forEach(project => {
+      tasks.push(...project.tasks);
+    });
+    return tasks;
+  }
+
+  const findElement = elementID => {
+    const lookup = {
+      ...projects,
+      ...taskGroups,
+      [deleted.name]: deleted
+    }
+    return lookup[elementID];
+  }
+
+  /* ------------------------------- Update DOM ------------------------------- */
+
   const printElements = (section, elements, additionalHTML = '') => {
     section.innerHTML = "";
     elements.forEach(element => {
       section.insertAdjacentHTML('beforeend', element.returnHTML());
     })
     section.insertAdjacentHTML('beforeend', additionalHTML);
-  }
-
-  const handleCreateTask = () => {
-    updatePopups();
-    handleNewTask();
   }
 
   const printMain = () => {
@@ -311,26 +334,8 @@ const app = (function () {
     printElements(elem.navProjects, Object.values(projects), templates.getNewProjectButton());
   }
 
-  const returnAllTasks = () => {
-    const tasks = [];
-    Object.values(projects).forEach(project => {
-      tasks.push(...project.tasks);
-    });
-    return tasks;
-  }
-
-  const findElement = elementID => {
-    const lookup = {
-      ...projects,
-      ...taskGroups,
-      [deleted.name]: deleted
-    }
-    return lookup[elementID];
-  }
-
-  const handleNavClick = event => {
-    const elementID = event.target.closest("li")?.id;
-    currentElement = findElement(elementID);
+  const refreshApp = () => {
+    updateNav();
     printMain();
   }
 
@@ -350,13 +355,26 @@ const app = (function () {
     })
   }
 
+  /* -------------------------------- Handlers -------------------------------- */
+
+  const handleNavClick = event => {
+    const elementID = event.target.closest("li")?.id;
+    currentElement = findElement(elementID);
+    printMain();
+  }
+
+  const handleCreateTask = () => {
+    updatePopups();
+    handleNewTask();
+  }
+
   async function handleNewTask() {
     const popup = popups.newTask;
 
     try {
       const data = await popup.waitForUserInput(currentElement.name);
       console.log('User submitted:', data);
-      // addTask()
+      addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')]);
     } catch (e) {
       console.log('User canceled:', e);
     }
@@ -392,8 +410,9 @@ const app = (function () {
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
+  let currentElement;
   testContent();
-  let currentElement = taskGroups.Today;
+  currentElement = taskGroups.Today;
 
   /* ---------------------- Events and UI initialization ---------------------- */
   elem.nav.addEventListener('click', handleNavClick);
