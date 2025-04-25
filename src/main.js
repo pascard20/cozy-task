@@ -53,10 +53,51 @@ class PopUp {
     ];
   }
 
+  handleExit() {
+    this.DOMElement.close();
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.currentData = new FormData(event.target);
+    this.handleExit()
+  }
+
+  returnHTML() {
+    return `
+    <dialog class="popup popup__task" id="${this.elementID}">
+      <div class="popup__header">
+        <h2 class="popup__title">${this.title}</h2>
+        <div class="popup__exit">x</div>
+      </div>
+
+      <hr class="divider">
+    `;
+  }
+
+  createDOMElement() {
+    if (!this.DOMElement) {
+      document.body.insertAdjacentHTML('beforeend', this.returnHTML());
+      this.DOMElement = document.querySelector(`#${this.elementID}`);
+    }
+  }
+
+  attachEventListeners() {
+    this.eventListeners.forEach(({ selector, event, handler }) => {
+      this.DOMElement.querySelector(selector)?.addEventListener(event, handler);
+    })
+  }
+
+  initializeDOMElement() {
+    this.createDOMElement();
+    this.attachEventListeners();
+  }
+
   waitForUserInput(defaultProject = null) {
     const form = this.DOMElement.querySelector('form');
     form.reset()
 
+    // Set default project
     const select = this.DOMElement.querySelector('select');
     if (defaultProject) {
       const isValid = [...select.options].some(option => option.value === defaultProject);
@@ -84,48 +125,6 @@ class PopUp {
       this.DOMElement.addEventListener('submit', onSubmit, { once: true });
       this.DOMElement.addEventListener('close', onClose, { once: true });
     });
-  }
-
-  handleExit() {
-    this.DOMElement.close();
-  }
-
-  handleSubmit(event) {
-    console.log('Saving')
-    event.preventDefault();
-    this.currentData = new FormData(event.target);
-    this.handleExit()
-  }
-
-  returnHTML() {
-    return `
-    <dialog class="popup popup__task" id="${this.elementID}">
-      <div class="popup__header">
-        <h2 class="popup__title">${this.title}</h2>
-        <div class="popup__exit">x</div>
-      </div>
-
-      <hr class="divider">
-    `;
-  }
-
-  createDOMElement() {
-    if (!this.DOMElement) {
-      document.body.insertAdjacentHTML('beforeend', this.returnHTML());
-      this.DOMElement = document.querySelector(`#${this.elementID}`);
-      // this.DOMElement.close();
-    }
-  }
-
-  attachEventListeners() {
-    this.eventListeners.forEach(({ selector, event, handler }) => {
-      this.DOMElement.querySelector(selector)?.addEventListener(event, handler);
-    })
-  }
-
-  initializeDOMElement() {
-    this.createDOMElement();
-    this.attachEventListeners();
   }
 }
 
@@ -394,13 +393,13 @@ const app = (function () {
     section.insertAdjacentHTML('beforeend', additionalHTML);
   }
 
-  const handleNewTask = () => {
+  const handleCreateTask = () => {
     updatePopups();
-    addNewTask();
+    handleNewTask();
   }
 
   const printMain = () => {
-    elem.btnNewTask?.removeEventListener('click', handleNewTask);
+    elem.btnNewTask?.removeEventListener('click', handleCreateTask);
 
     elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
     elem.mainTasks.innerHTML = '';
@@ -410,7 +409,7 @@ const app = (function () {
       })
     }
 
-    elem.btnNewTask.addEventListener('click', handleNewTask);
+    elem.btnNewTask.addEventListener('click', handleCreateTask);
   }
 
   const updateNav = () => {
@@ -442,13 +441,6 @@ const app = (function () {
     printMain();
   }
 
-  elem.nav.addEventListener('click', handleNavClick);
-
-  let currentElement;
-
-  // console.log(popups.newTask)
-  // console.log(popups.newTask.querySelector('select'))
-
   const updateProjectOptions = (selectElement, projects) => {
     selectElement.innerHTML = '';
     for (const projectName in projects) {
@@ -465,9 +457,19 @@ const app = (function () {
     })
   }
 
-  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
-  const loremIpsumSplit = loremIpsum.split(' ');
+  async function handleNewTask() {
+    const popup = popups.newTask;
 
+    try {
+      const data = await popup.waitForUserInput(currentElement.name);
+      console.log('User submitted:', data);
+      // addTask()
+    } catch (e) {
+      console.log('User canceled:', e);
+    }
+  }
+
+  /* ------------------------- Initialize task groups ------------------------- */
   const taskGroups = {
     All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
     Today: new TaskGroup('Today', icons.day, task => task.getDaysLeft() === 0),
@@ -481,10 +483,9 @@ const app = (function () {
   const deleted = new Project('Deleted', icons.trash, false, false);
   addProject('Uncategorized', icons.folder);
 
-  testContent();
   const mainHeader = new MainHeader();
-  currentElement = taskGroups.Today;
 
+  /* ---------------------------- Initialize popups --------------------------- */
   const popups = {
     newTask: new TaskPopUp('New task'),
     editTask: new TaskPopUp('Edit task')
@@ -494,19 +495,15 @@ const app = (function () {
     popup.initializeDOMElement();
   })
 
-  async function addNewTask() {
-    const popup = popups.newTask;
+  /* ------------------------- Initialize test content ------------------------ */
+  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
+  const loremIpsumSplit = loremIpsum.split(' ');
 
-    try {
-      const data = await popup.waitForUserInput(currentElement.name);
-      console.log('User submitted:', data);
-      // 👇 create your task here
-      // createTask(data);
-    } catch (e) {
-      console.log('User canceled:', e);
-      // 👇 do nothing, user closed modal
-    }
-  }
+  testContent();
+  let currentElement = taskGroups.Today;
+
+  /* ---------------------- Events and UI initialization ---------------------- */
+  elem.nav.addEventListener('click', handleNavClick);
 
   updatePopups();
   printMain();

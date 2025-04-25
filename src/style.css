@@ -443,13 +443,15 @@ select.popup__input {
 .popup__form {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  grid-template-rows: repeat(auto-fill, 2.5rem);
+  grid-auto-rows: 2.5rem;
   gap: 1.75rem;
-  margin: 1rem 0 6.5rem;
+  margin: 1rem 0 5.5rem;
 }
 
 .popup__input-description {
   grid-row: 2 / span 2;
+  justify-self: stretch;
+  align-self: stretch;
 
   .popup__input {
     padding-top: .25rem;
@@ -553,5 +555,3 @@ select.popup__input {
     transform: translateX(calc(100% + .125rem));
   }
 }
-
-/* ---------------------------------- FORM ---------------------------------- */
