@@ -8,37 +8,37 @@ const popUpProjectForm = `
       <p><span>Icon</span></p>
       <div class="icon-options">
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" checked />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" checked />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 
         <label class="icon-selector">
-          <input type="radio" name="project-icon" value="folder" />
+          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
         </label>
 

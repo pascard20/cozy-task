@@ -1,5 +1,4 @@
 import templates from './htmlTemplates.js';
-import { projects } from './globals.js';
 
 class PopUp {
   constructor(name, headerContent) {
@@ -7,7 +6,6 @@ class PopUp {
     this.headerContent = headerContent;
     this.DOMElement = null;
     this.currentData = null;
-    // this.elementID = `popup-${title.toLowerCase().replace(' ', '-')}`;
     this.eventListeners = [
       { selector: '.popup__exit', event: 'click', handler: this.handleExit.bind(this) },
       { selector: '.popup__form', event: 'submit', handler: this.handleSubmit.bind(this) },
@@ -46,16 +44,24 @@ class PopUp {
     this.attachEventListeners();
   }
 
-  waitForUserInput(defaultProject = null) {
+  waitForUserInput(defaultValues = {}) {
     const form = this.DOMElement.querySelector('form');
     form.reset()
 
-    // Set default project
-    const select = this.DOMElement.querySelector('select');
-    if (defaultProject) {
-      const isValid = [...select.options].some(option => option.value === defaultProject);
-      select.value = isValid ? defaultProject : Object.keys(projects)[0];
-    }
+    Object.entries(defaultValues).forEach(([selector, value]) => {
+      const inputs = form.querySelectorAll(selector);
+      inputs.forEach(input => {
+        const type = input.type.toLowerCase();
+        if (type === 'radio') {
+          input.checked = input.value === value;
+        } else if (type === 'checkbox') {
+          input.checked = !!value;
+        } else {
+          input.value = value;
+        }
+      })
+    })
+
     this.DOMElement.showModal();
 
     return new Promise((resolve, reject) => {

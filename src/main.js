@@ -171,7 +171,7 @@ const app = (function () {
   }
 
   async function handleNewProject() {
-    const newProject = await handleNewFromInput(popups.newProject, data => {
+    const newProject = await handleUserInput(popups.newProject, data => {
       return addProject(data.get('title'), icons[data.get('project-icon')]);
     })
 
@@ -180,17 +180,31 @@ const app = (function () {
 
   }
 
-  function handleNewTask() {
+  async function handleNewTask() {
     updatePopups();
-    handleNewFromInput(popups.newTask, data => {
+    await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')]);
-    }, currentElement.name)
+    }, { '#project': currentElement.name })
     refreshApp();
   }
 
-  async function handleNewFromInput(popup, createFunction, defaultProject = null) {
+  async function handleEditTask(task) {
+    updatePopups();
+    await handleUserInput(popups.editTask, data => {
+      task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')])
+    }, {
+      '#title': task.title,
+      '#description': task.description,
+      '#dueDate': task.date,
+      '#isImportant': task.isImportant,
+      '#project': currentElement.name
+    })
+    refreshApp();
+  }
+
+  async function handleUserInput(popup, createFunction, defaultValues = {}) {
     try {
-      const data = await popup.waitForUserInput(defaultProject);
+      const data = await popup.waitForUserInput(defaultValues);
       console.log('User submitted:', data);
       return createFunction(data);
     } catch (event) {
@@ -204,6 +218,23 @@ const app = (function () {
     const taskClicked = currentElement.tasks.find(task => task.id === taskID);
 
     if (taskClicked) {
+      const clickedSetting = event.target.closest('.main__item-setting');
+
+      if (clickedSetting) {
+        const editButton = taskElement.querySelector('.main__item-edit');
+        if (clickedSetting === editButton) {
+          handleEditTask(taskClicked);
+          console.log('Edit task, id:', taskID);
+          return;
+        }
+
+        const deleteButton = taskElement.querySelector('.main__item-delete');
+        if (clickedSetting === deleteButton) {
+          console.log('Delete task, id:', taskID);
+          return
+        }
+      }
+
       taskClicked.isCompleted = !taskClicked.isCompleted;
       taskElement.classList.toggle('completed');
       refreshApp();
@@ -234,7 +265,8 @@ const app = (function () {
   const popups = {
     newTask: new TaskPopUp('newTask', 'New task'),
     editTask: new TaskPopUp('editTask', 'Edit task'),
-    newProject: new ProjectPopUp('newProject', 'New project')
+    newProject: new ProjectPopUp('newProject', 'New project'),
+    editProject: new ProjectPopUp('editProject', 'Edit project')
   }
 
   Object.values(popups).forEach(popup => {

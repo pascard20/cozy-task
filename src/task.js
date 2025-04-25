@@ -1,7 +1,7 @@
 import templates from './htmlTemplates.js';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { generateID } from './utils.js';
-import { icons } from './globals.js';
+import { icons, projects } from './globals.js';
 
 export class Task {
   constructor(title, description = null, date = null, isImportant = false) {
@@ -13,11 +13,26 @@ export class Task {
     this.isCompleted = false;
   }
 
-  update(title = null, description = null, date = null, isImportant = false) {
-    if (title) this.title = title;
+  get project() {
+    return Object.values(projects).find(project => {
+      return project.tasks.some(task => task.id === this.id);
+    });
+  }
+
+  update(title, description = null, date = null, isImportant = false, project) {
+    this.title = title;
     if (description) this.description = description;
     if (date) this.date = date;
-    if (isImportant) this.isImportant = isImportant;
+    this.isImportant = isImportant;
+    this.changeProject(project);
+  }
+
+  changeProject(newProject) {
+    const index = this.project.tasks.indexOf(this);
+    if (index > -1) {
+      this.project.tasks.splice(index, 1);
+    }
+    newProject.tasks.push(this);
   }
 
   formatDueDate() {

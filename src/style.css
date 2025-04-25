@@ -3,6 +3,7 @@
 :root {
   --colorBackground: #FCFBFA;
   --colorNav: #F7F4F0;
+  --colorAccentDark: #862020;
   --colorAccent: #c03d3d;
   --colorAccentLight: #D35D5C;
   --colorAccentInactive: #8f5d5d;
@@ -321,6 +322,10 @@ body {
   &>* {
     color: var(--colorAccent);
     border-color: var(--colorAccent);
+  }
+
+  .main__item-setting:hover {
+    color: var(--colorAccentDark);
   }
 }
 
