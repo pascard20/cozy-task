@@ -52,9 +52,9 @@ export default {
     `;
   },
 
-  getTask(title, description, date, isImportant, editIcon, deleteIcon) {
+  getTask(index, title, description, date, isImportant, isCompleted, editIcon, deleteIcon) {
     return `
-      <li class="main__item${isImportant ? ' main__item--important' : ''}">
+      <li data-index="${index}" class="main__item${isImportant ? ' main__item--important' : ''}${isCompleted ? ' completed' : ''}">
         <div class="main__item-checkbox"></div>
         <div class="main__item-duedate">${date}</div>
         <div class="main__item-name">${title}</div>

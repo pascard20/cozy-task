@@ -1,7 +1,7 @@
 import './reset.css';
 import './style.css';
 import { addDays, differenceInCalendarDays, format } from 'date-fns';
-import { capitalizeString } from './utils.js';
+import { capitalizeString, generateID } from './utils.js';
 import { elem, icons } from './globals.js';
 import templates from './htmlTemplates.js';
 
@@ -97,6 +97,7 @@ class ProjectPopUP extends PopUp {
 
 class Task {
   constructor(title, description = null, date = null, isImportant = false) {
+    this.id = generateID();
     this.title = title;
     this.description = description;
     this.date = date;
@@ -127,7 +128,7 @@ class Task {
   }
 
   returnHTML() {
-    return templates.getTask(this.title, this.description, this.formatDueDate(), this.isImportant, icons.edit, icons.trash);
+    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted, icons.edit, icons.trash);
   }
 
   getDaysLeft() {
@@ -380,6 +381,18 @@ const app = (function () {
     }
   }
 
+  const handleTaskClick = event => {
+    const taskElement = event.target.closest('.main__item');
+    const taskID = taskElement.dataset.index;
+    const taskClicked = currentElement.tasks.find(task => task.id === taskID);
+
+    if (taskClicked) {
+      taskClicked.isCompleted = !taskClicked.isCompleted;
+      taskElement.classList.toggle('completed');
+      refreshApp();
+    } else console.warn('Task not found');
+  }
+
   /* ------------------------- Initialize task groups ------------------------- */
   const taskGroups = {
     All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
@@ -416,6 +429,7 @@ const app = (function () {
 
   /* ---------------------- Events and UI initialization ---------------------- */
   elem.nav.addEventListener('click', handleNavClick);
+  elem.mainTasks.addEventListener('click', handleTaskClick);
 
   updatePopups();
   printMain();

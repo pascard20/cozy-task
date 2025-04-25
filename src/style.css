@@ -247,11 +247,12 @@ body {
   align-items: center;
   /* line-height: 1; */
   padding: 1rem 2rem 1rem 1rem;
+  transition: all .1s, background-color .1s;
 
   &:hover {
     /* box-shadow: 0 0 .25rem rgba(0, 0, 0, .2); */
     background: var(--colorNav);
-    transition: .1s;
+    /* transition: .1s; */
     cursor: pointer;
   }
 
@@ -266,6 +267,7 @@ body {
   width: 1rem;
   height: 1rem;
   border: 2px solid var(--colorTextLight);
+  transition: .1s;
 }
 
 .main__item-duedate {
@@ -320,7 +322,22 @@ body {
   }
 }
 
-.main__item--completed {}
+.main__item.completed {
+  --colorComplete: var(--colorTextLight);
+
+  text-decoration: line-through;
+
+  &,
+  &>* {
+    color: var(--colorComplete);
+
+  }
+
+  .main__item-checkbox {
+    border-color: var(--colorComplete);
+    background-color: var(--colorComplete);
+  }
+}
 
 /* ---------------------------------- POPUP --------------------------------- */
 
