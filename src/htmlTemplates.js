@@ -1,3 +1,14 @@
+import { icons } from "./globals";
+
+const getIconSelector = (value, iconHTML) => {
+  return `
+    <label class="icon-selector">
+      <input type="radio" class="icon__radio" name="project-icon" value="${value}" ${value === Object.keys(icons.projectChoice)[0] ? ' checked' : ''} required/>
+      ${iconHTML}
+    </label>
+  `
+}
+
 const popUpProjectForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
@@ -7,7 +18,13 @@ const popUpProjectForm = `
     <div class="popup__input-icon popup__input-area">
       <p><span>Icon</span></p>
       <div class="icon-options">
-        <label class="icon-selector">
+      ${Object.entries(icons.projectChoice).map(([value, iconHTML]) => getIconSelector(value, iconHTML)).join('')}
+      </div>
+    </div>
+    <button class="popup__btn btn" type="submit">Save project</button>
+  </form>`;
+
+/* <label class="icon-selector">
           <input type="radio" class="icon__radio" name="project-icon" value="folder" checked />
           <i class="fa-solid fa-folder"></i>
         </label>
@@ -40,15 +57,7 @@ const popUpProjectForm = `
         <label class="icon-selector">
           <input type="radio" class="icon__radio" name="project-icon" value="folder" />
           <i class="fa-solid fa-folder"></i>
-        </label>
-
-
-      </div>
-
-    </div>
-
-    <button class="popup__btn btn" type="submit">Save project</button>
-  </form>`;
+        </label> */
 
 const popUpTaskForm = `
   <form action="#" class="popup__form" autocomplete="off">

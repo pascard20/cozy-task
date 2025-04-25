@@ -32,11 +32,15 @@ export const icons = {
   game: `<i class="fa-solid fa-gamepad"></i>`
 }
 
-icons.forProjects = [
-  icons.folder,
-  icons.people,
-  icons.house,
-  icons.dumbbell,
-  icons.briefcase,
-  icons.game
+const projectIconKeys = [
+  'folder',
+  'people',
+  'house',
+  'dumbbell',
+  'briefcase',
+  'game'
 ]
+
+icons.projectChoice = Object.fromEntries(
+  projectIconKeys.map(key => [key, icons[key]])
+);
