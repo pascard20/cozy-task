@@ -1,4 +1,5 @@
 import templates from './htmlTemplates.js';
+import { icons } from './globals.js';
 
 class PopUp {
   constructor(name, headerContent) {
@@ -53,7 +54,7 @@ class PopUp {
       inputs.forEach(input => {
         const type = input.type.toLowerCase();
         if (type === 'radio') {
-          input.checked = input.value === value;
+          input.checked = icons[input.value] === value;
         } else if (type === 'checkbox') {
           input.checked = !!value;
         } else {
@@ -71,7 +72,6 @@ class PopUp {
       };
 
       const onSubmit = () => {
-        console.log('Exporting')
         cleanup();
         resolve(this.currentData);
       };

@@ -24,16 +24,16 @@ const app = (function () {
   }
 
   const addProject = (name, icon) => {
-    if (!projects[name]) {
+    if (!findElement(name)) {
       const newProject = new Project(name, icon);
-      projects[name] = newProject;
+      projects.push(newProject);
       updateNav();
       return newProject;
     } else console.warn('Project already exists!');
 
   }
 
-  const addTask = (title, description = null, date = null, isImportant = false, project = projects.Uncategorized) => {
+  const addTask = (title, description = null, date = null, isImportant = false, project = findElement('Uncategorized')) => {
     if (project) {
       const newTask = project.addTask(title, description, date, isImportant);
       refreshApp();
@@ -43,7 +43,11 @@ const app = (function () {
 
   /* ------------------------------ Test content ------------------------------ */
 
-  const generateRandomTasks = (project = projects.Uncategorized) => {
+  // const searchProject = title => {
+  //   return projects.find(project => project.name === title);
+  // }
+
+  const generateRandomTasks = (project = findElement('Uncategorized')) => {
     const taskCount = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < taskCount; i++) {
       const isImportant = Math.random() < 1 / 4;
@@ -77,7 +81,7 @@ const app = (function () {
 
     for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
       addProject(name, icons[icon]);
-      generateRandomTasks(projects[name]);
+      generateRandomTasks(findElement(name));
     }
 
     generateRandomTasks(deleted);
@@ -87,7 +91,7 @@ const app = (function () {
 
   const returnAllTasks = () => {
     const tasks = [];
-    Object.values(projects).forEach(project => {
+    projects.forEach(project => {
       tasks.push(...project.tasks);
     });
     return tasks;
@@ -95,7 +99,10 @@ const app = (function () {
 
   const findElement = elementID => {
     const lookup = {
-      ...projects,
+      ...projects.reduce((acc, project) => {
+        acc[project.name] = project;
+        return acc;
+      }, {}),
       ...taskGroups,
       [deleted.name]: deleted
     }
@@ -134,7 +141,7 @@ const app = (function () {
     // elem.btnNewProject?.removeEventListener('click', handleCreateProject);
 
     printElements(elem.navGroups, [...Object.values(taskGroups), deleted]);
-    printElements(elem.navProjects, Object.values(projects), templates.getNewProjectButton());
+    printElements(elem.navProjects, projects, templates.getNewProjectButton());
 
     elem.btnNewProject?.addEventListener('click', handleNewProject);
   }
@@ -147,12 +154,12 @@ const app = (function () {
   const updateProjectOptions = (selectElement, projects) => {
     if (selectElement) {
       selectElement.innerHTML = '';
-      for (const projectName in projects) {
+      projects.forEach(projectName => {
         const option = document.createElement('option');
         option.value = projectName;
         option.textContent = projectName;
         selectElement.appendChild(option);
-      }
+      });
     }
   }
 
@@ -162,12 +169,35 @@ const app = (function () {
     })
   }
 
+  // const findIconKey = value => {
+  //   return Object.keys(icons).find(key => icons[key] === value) || null;
+  // }
+
   /* -------------------------------- Handlers -------------------------------- */
 
   const handleNavClick = event => {
-    const elementID = event.target.closest("li")?.id;
-    currentElement = findElement(elementID);
-    printMain();
+    const projectElement = event.target.closest("li");
+    const elementID = projectElement?.id;
+    const clickedSetting = event.target.closest('.nav__item-setting');
+    const tempElement = findElement(elementID)
+
+    if (clickedSetting) {
+      const editButton = projectElement.querySelector('.nav__item-edit');
+      if (clickedSetting === editButton) {
+        handleEditProject(tempElement);
+        return;
+      }
+
+      const deleteButton = projectElement.querySelector('.nav__item-delete');
+      if (clickedSetting === deleteButton) {
+        return
+      }
+    }
+
+    else {
+      currentElement = tempElement;
+      printMain();
+    }
   }
 
   async function handleNewProject() {
@@ -183,7 +213,7 @@ const app = (function () {
   async function handleNewTask() {
     updatePopups();
     await handleUserInput(popups.newTask, data => {
-      return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')]);
+      return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
     }, { '#project': currentElement.name })
     refreshApp();
   }
@@ -191,7 +221,7 @@ const app = (function () {
   async function handleEditTask(task) {
     updatePopups();
     await handleUserInput(popups.editTask, data => {
-      task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, projects[data.get('project')])
+      task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
     }, {
       '#title': task.title,
       '#description': task.description,
@@ -202,13 +232,25 @@ const app = (function () {
     refreshApp();
   }
 
+  async function handleEditProject(project) {
+    await handleUserInput(popups.editProject, data => {
+      if (!findElement(data.get('title'))) {
+        project.update(data.get('title'), icons[data.get('project-icon')]);
+      } else console.warn('This project/task group already exists!');
+    }, {
+      '#title': project.name,
+      '.icon__radio': project.icon
+    })
+    refreshApp();
+  }
+
   async function handleUserInput(popup, createFunction, defaultValues = {}) {
     try {
       const data = await popup.waitForUserInput(defaultValues);
-      console.log('User submitted:', data);
+      // console.log('User submitted:', data);
       return createFunction(data);
     } catch (event) {
-      console.log('User canceled:', event);
+      // console.log('User canceled:', event);
     }
   }
 
@@ -224,13 +266,11 @@ const app = (function () {
         const editButton = taskElement.querySelector('.main__item-edit');
         if (clickedSetting === editButton) {
           handleEditTask(taskClicked);
-          console.log('Edit task, id:', taskID);
           return;
         }
 
         const deleteButton = taskElement.querySelector('.main__item-delete');
         if (clickedSetting === deleteButton) {
-          console.log('Delete task, id:', taskID);
           return
         }
       }

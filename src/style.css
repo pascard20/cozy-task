@@ -408,6 +408,8 @@ dialog:not([open]) {
     padding: 0 .625rem;
     transition: .2s;
 
+    color: var(--colorTextLight);
+
     span {
       position: relative;
       z-index: 2;
@@ -421,8 +423,6 @@ dialog:not([open]) {
       bottom: 0;
       left: 50%;
       right: 50%;
-      /* width: 0; */
-      /* height: 1rem; */
       background: var(--colorBackground);
       transition: .2s;
       z-index: 1;
@@ -432,9 +432,8 @@ dialog:not([open]) {
   .popup__input:focus+label,
   .popup__input:not(:placeholder-shown)+label {
     top: -0.65rem;
-    /* left: 0.5rem; */
     font-size: 0.8rem;
-    color: var(--colorText);
+    /* color: var(--colorText); */
 
     &::before {
       /* width: calc(100% + .5rem); */
@@ -633,6 +632,7 @@ select.popup__input {
     /* color: red; */
     cursor: pointer;
     padding-left: .25rem;
+    color: var(--colorText);
   }
 
   /* The switch - the box around the slider */

@@ -14,7 +14,7 @@ export class Task {
   }
 
   get project() {
-    return Object.values(projects).find(project => {
+    return projects.find(project => {
       return project.tasks.some(task => task.id === this.id);
     });
   }

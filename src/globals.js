@@ -1,4 +1,4 @@
-export const projects = {};
+export const projects = [];
 
 export const elem = {
   nav: document.querySelector('.nav'),

@@ -19,7 +19,7 @@ export class MainHeader extends Counter {
   }
 }
 
-class NavElement extends Counter {
+export class NavElement extends Counter {
   constructor(name, icon, isCounting = true, isEditable = true, tasks = []) {
     super();
     this.name = name;
@@ -43,7 +43,6 @@ class NavElement extends Counter {
       defaultTaskCount: 0,
       importantTaskCount: 0
     }
-    // console.log(this.tasks)
     this.tasks.forEach(task => {
       if (!task.isCompleted) {
         if (task.isImportant) {
