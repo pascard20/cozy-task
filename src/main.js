@@ -90,6 +90,8 @@ const app = (function () {
 
   /* ------------------------------- Update DOM ------------------------------- */
 
+  const mainHeader = new MainHeader();
+
   const printElements = (section, elements, additionalHTML = '') => {
     section.innerHTML = "";
     elements.forEach(element => {
@@ -139,7 +141,7 @@ const app = (function () {
   }
 
   const updatePopups = () => {
-    Object.values(popups).forEach(popup => {
+    Object.values(global.popups).forEach(popup => {
       updateProjectOptions(popup.DOMElement.querySelector('select'), global.projects.map(project => project.title));
     })
   }
@@ -161,7 +163,7 @@ const app = (function () {
 
       const deleteButton = projectElement.querySelector('.nav__item-delete');
       if (clickedSetting === deleteButton) {
-        handleProjectDelete(tempElement);
+        handleDeleteProject(tempElement);
         return;
       }
     }
@@ -193,7 +195,7 @@ const app = (function () {
         const deleteButton = taskElement.querySelector('.main__item-delete');
         if (clickedSetting === deleteButton) {
           if (global.currentElement.title === 'Deleted') {
-            handleTaskDelete(taskClicked);
+            handleDeleteTask(taskClicked);
           } else {
             taskClicked.update(
               taskClicked.title,
@@ -216,7 +218,7 @@ const app = (function () {
   }
 
   const handleNewProject = async () => {
-    const newProject = await handleUserInput(popups.newProject, data => {
+    const newProject = await handleUserInput(global.popups.newProject, data => {
       return addProject(data.get('title'), global.icons[data.get('project-icon')]);
     })
 
@@ -228,7 +230,7 @@ const app = (function () {
 
   const handleNewTask = async () => {
     updatePopups();
-    const newTask = await handleUserInput(popups.newTask, data => {
+    const newTask = await handleUserInput(global.popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
     }, { '#project': global.currentElement?.title })
     if (newTask) createNotification('Task created');
@@ -238,7 +240,7 @@ const app = (function () {
   const handleEditTask = async task => {
     updatePopups();
     const tempProjectTitle = task.project.title;
-    const editedTask = await handleUserInput(popups.editTask, data => {
+    const editedTask = await handleUserInput(global.popups.editTask, data => {
       return task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
     }, {
       '#title': task.title,
@@ -256,7 +258,7 @@ const app = (function () {
 
   const handleEditProject = async project => {
     const tempProjectTitle = project.title;
-    const editedProject = await handleUserInput(popups.editProject, data => {
+    const editedProject = await handleUserInput(global.popups.editProject, data => {
       if (!findElement(data.get('title')) || data.get('title') === tempProjectTitle) {
         return project.update(data.get('title'), global.icons[data.get('project-icon')]);
       } else {
@@ -292,8 +294,8 @@ const app = (function () {
     }
   }
 
-  const handleTaskDelete = async task => {
-    const isTaskDeleted = await handleUserConfirmation(popups.deleteTask, isConfirmed => {
+  const handleDeleteTask = async task => {
+    const isTaskDeleted = await handleUserConfirmation(global.popups.deleteTask, isConfirmed => {
       return isConfirmed ? task.delete() : false;
     });
     if (isTaskDeleted) {
@@ -302,8 +304,8 @@ const app = (function () {
     }
   }
 
-  const handleProjectDelete = async project => {
-    const deletedProjectInfo = await handleUserConfirmation(popups.deleteProject, isConfirmed => {
+  const handleDeleteProject = async project => {
+    const deletedProjectInfo = await handleUserConfirmation(global.popups.deleteProject, isConfirmed => {
       return isConfirmed ? project.delete() : false;
     })
     if (deletedProjectInfo) {
@@ -331,10 +333,8 @@ const app = (function () {
   global.deleted = new Project('Deleted', global.icons.trash, false, false);
   addProject('Uncategorized', global.icons.folder, false);
 
-  const mainHeader = new MainHeader();
-
   /* ---------------------------- Initialize popups --------------------------- */
-  const popups = {
+  global.popups = {
     newTask: new TaskPopUp('newTask', 'New task'),
     editTask: new TaskPopUp('editTask', 'Edit task'),
     newProject: new ProjectPopUp('newProject', 'New project'),
@@ -343,7 +343,7 @@ const app = (function () {
     deleteProject: new DeletePopUp('deleteProject')
   }
 
-  Object.values(popups).forEach(popup => {
+  Object.values(global.popups).forEach(popup => {
     popup.initializeDOMElement();
   })
 

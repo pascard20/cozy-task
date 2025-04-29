@@ -6,6 +6,8 @@ const global = {
 
   taskGroups: {},
 
+  popups: {},
+
   currentElement: null,
 
   elem: {

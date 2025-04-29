@@ -4,7 +4,7 @@ import global from "./globals";
 const parent = global.elem.notifications;
 
 class Notification {
-  constructor(message, type = 'info', duration = 4000) {
+  constructor(message, type, duration = 4000) {
     this.message = message;
     this.type = type;
     this.duration = duration;
@@ -60,6 +60,6 @@ class Notification {
   }
 }
 
-export const createNotification = message => {
-  (new Notification(message)).show();
+export const createNotification = (message, type = 'info') => {
+  (new Notification(message, type)).show();
 }
