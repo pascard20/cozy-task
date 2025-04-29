@@ -14,8 +14,10 @@ const global = {
     nav: document.querySelector('.nav'),
     navGroups: document.querySelector('.nav__groups'),
     navProjects: document.querySelector('.nav__projects'),
+    navProjectsWrapper: document.querySelector('.nav__projects-wrapper'),
     mainHeader: document.querySelector('.main__header'),
     mainTasks: document.querySelector('.main__tasks'),
+    mainTasksWrapper: document.querySelector('.main__tasks-wrapper'),
     notifications: document.querySelector('.notifications'),
 
     get btnNewTask() {

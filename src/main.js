@@ -1,3 +1,5 @@
+import SimpleBar from 'simplebar';
+import 'simplebar/dist/simplebar.css';
 import './reset.css';
 import './style.css';
 import { addDays } from 'date-fns';
@@ -32,7 +34,7 @@ const app = (function () {
       updateNav();
       return newProject;
     } else {
-      createNotification(`The title ${name} is already being used`, 'warning')
+      createNotification(`The title "${name}" is already being used`, 'warning')
       console.warn('Project already exists!');
     }
 
@@ -262,7 +264,7 @@ const app = (function () {
       if (!findElement(data.get('title')) || data.get('title') === tempProjectTitle) {
         return project.update(data.get('title'), global.icons[data.get('project-icon')]);
       } else {
-        createNotification(`The title ${data.get('title')} is already being used`, 'warning')
+        createNotification(`The title "${data.get('title')}" is already being used`, 'warning')
         console.warn('This project/task group already exists!')
       };
     }, {
@@ -334,6 +336,7 @@ const app = (function () {
   addProject('Uncategorized', global.icons.folder, false);
 
   /* ---------------------------- Initialize popups --------------------------- */
+
   global.popups = {
     newTask: new TaskPopUp('newTask', 'New task'),
     editTask: new TaskPopUp('editTask', 'Edit task'),
@@ -348,17 +351,28 @@ const app = (function () {
   })
 
   /* -------------------------- Generate test content ------------------------- */
+
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
   testContent();
   global.currentElement = global.taskGroups.Today;
 
-  /* ---------------------- Events and UI initialization ---------------------- */
+  /* --------------------------------- Events --------------------------------- */
+
   global.elem.nav.addEventListener('click', handleNavClick);
   global.elem.mainTasks.addEventListener('click', handleTaskClick);
 
+  /* ------------------------------ Initialize UI ----------------------------- */
+
+  new SimpleBar(global.elem.mainTasksWrapper, {
+    autoHide: false
+  });
+  new SimpleBar(global.elem.navProjectsWrapper, {
+    autoHide: false
+  });
   updatePopups();
   printMain();
+
 
 })();

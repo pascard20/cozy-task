@@ -40,7 +40,7 @@ export const addProject = (name, icon, isEditable = true) => {
     updateNav();
     return newProject;
   } else {
-    createNotification(`The title ${name} is already being used`, 'warning')
+    createNotification(`The title "${name}" is already being used`, 'warning')
     console.warn('Project already exists!');
   }
 
