@@ -25,9 +25,9 @@ const app = (function () {
     })
   }
 
-  const addProject = (name, icon) => {
+  const addProject = (name, icon, isEditable = true) => {
     if (!findElement(name)) {
-      const newProject = new Project(name, icon);
+      const newProject = new Project(name, icon, true, isEditable);
       global.projects.push(newProject);
       updateNav();
       return newProject;
@@ -99,11 +99,11 @@ const app = (function () {
   }
 
   const printMain = () => {
-    if (currentElement) {
-      global.elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
+    if (global.currentElement) {
+      global.elem.mainHeader.innerHTML = mainHeader.returnHTML(global.currentElement);
       global.elem.mainTasks.innerHTML = '';
-      if (currentElement) {
-        currentElement.tasks.forEach(task => {
+      if (global.currentElement) {
+        global.currentElement.tasks.forEach(task => {
           global.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
@@ -161,14 +161,58 @@ const app = (function () {
 
       const deleteButton = projectElement.querySelector('.nav__item-delete');
       if (clickedSetting === deleteButton) {
-        return
+        handleProjectDelete(tempElement);
+        return;
       }
     }
 
     else {
-      currentElement = tempElement;
+      global.currentElement = tempElement;
       printMain();
     }
+  }
+
+  const handleTaskClick = event => {
+    const taskElement = event.target.closest('.main__item');
+    const taskID = taskElement.dataset.index;
+    const taskClicked = global.currentElement.tasks.find(task => task.id === taskID);
+
+    if (taskClicked) {
+      const clickedSetting = event.target.closest('.main__item-setting');
+
+      if (clickedSetting) {
+
+        // Edit task
+        const editButton = taskElement.querySelector('.main__item-edit');
+        if (clickedSetting === editButton) {
+          handleEditTask(taskClicked);
+          return;
+        }
+
+        // Delete task
+        const deleteButton = taskElement.querySelector('.main__item-delete');
+        if (clickedSetting === deleteButton) {
+          if (global.currentElement.title === 'Deleted') {
+            handleTaskDelete(taskClicked);
+          } else {
+            taskClicked.update(
+              taskClicked.title,
+              taskClicked.description,
+              taskClicked.date,
+              taskClicked.isImportant,
+              findElement('Deleted')
+            )
+            createNotification('Task moved to Deleted');
+          }
+          refreshApp();
+          return;
+        }
+      }
+
+      taskClicked.isCompleted = !taskClicked.isCompleted;
+      taskElement.classList.toggle('completed');
+      refreshApp();
+    } else console.warn('Task not found');
   }
 
   const handleNewProject = async () => {
@@ -177,17 +221,16 @@ const app = (function () {
     })
 
     if (newProject) {
-      currentElement = newProject;
+      global.currentElement = newProject;
       printMain();
     }
-
   }
 
   const handleNewTask = async () => {
     updatePopups();
     const newTask = await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
-    }, { '#project': currentElement?.title })
+    }, { '#project': global.currentElement?.title })
     if (newTask) createNotification('Task created');
     refreshApp();
   }
@@ -226,7 +269,7 @@ const app = (function () {
     })
     if (editedProject) {
       createNotification('Project edited')
-      if (tempProjectTitle !== editedProject.title) createNotification(`Project renamed from ${tempProjectTitle} to ${editedProject.title}`);
+      if (tempProjectTitle !== editedProject.title) createNotification(`Project renamed from "${tempProjectTitle}" to "${editedProject.title}"`);
       refreshApp();
     }
   }
@@ -259,47 +302,15 @@ const app = (function () {
     }
   }
 
-  const handleTaskClick = event => {
-    const taskElement = event.target.closest('.main__item');
-    const taskID = taskElement.dataset.index;
-    const taskClicked = currentElement.tasks.find(task => task.id === taskID);
-
-    if (taskClicked) {
-      const clickedSetting = event.target.closest('.main__item-setting');
-
-      if (clickedSetting) {
-
-        // Edit task
-        const editButton = taskElement.querySelector('.main__item-edit');
-        if (clickedSetting === editButton) {
-          handleEditTask(taskClicked);
-          return;
-        }
-
-        // Delete task
-        const deleteButton = taskElement.querySelector('.main__item-delete');
-        if (clickedSetting === deleteButton) {
-          if (currentElement.title === 'Deleted') {
-            handleTaskDelete(taskClicked);
-          } else {
-            taskClicked.update(
-              taskClicked.title,
-              taskClicked.description,
-              taskClicked.date,
-              taskClicked.isImportant,
-              findElement('Deleted')
-            )
-            createNotification('Task moved to Deleted');
-          }
-          refreshApp();
-          return;
-        }
-      }
-
-      taskClicked.isCompleted = !taskClicked.isCompleted;
-      taskElement.classList.toggle('completed');
+  const handleProjectDelete = async project => {
+    const deletedProjectInfo = await handleUserConfirmation(popups.deleteProject, isConfirmed => {
+      return isConfirmed ? project.delete() : false;
+    })
+    if (deletedProjectInfo) {
+      createNotification(`"${deletedProjectInfo.title}" project deleted`);
+      createNotification(`${deletedProjectInfo.deletedTaskCount} task${deletedProjectInfo.deletedTaskCount !== 1 ? 's' : ''} deleted`);
       refreshApp();
-    } else console.warn('Task not found');
+    }
   }
 
   /* ------------------------- Initialize task groups ------------------------- */
@@ -318,7 +329,7 @@ const app = (function () {
     Completed: new TaskGroup('Completed', global.icons.check, task => task.isCompleted, false)
   }
   global.deleted = new Project('Deleted', global.icons.trash, false, false);
-  addProject('Uncategorized', global.icons.folder);
+  addProject('Uncategorized', global.icons.folder, false);
 
   const mainHeader = new MainHeader();
 
@@ -340,9 +351,8 @@ const app = (function () {
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
-  let currentElement;
   testContent();
-  currentElement = global.taskGroups.Today;
+  global.currentElement = global.taskGroups.Today;
 
   /* ---------------------- Events and UI initialization ---------------------- */
   global.elem.nav.addEventListener('click', handleNavClick);

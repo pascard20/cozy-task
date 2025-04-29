@@ -14,7 +14,7 @@ export class MainHeader extends Counter {
     let defaultTaskCount = 0;
     let importantTaskCount = 0;
 
-    const isCounterHidden = currentElement === global.deleted || findElement('Completed');
+    const isCounterHidden = currentElement === global.deleted || currentElement === findElement('Completed');
     if (!isCounterHidden) ({ defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks());
 
     return super.returnCounterHTML('main__count', false, importantTaskCount, defaultTaskCount);
@@ -39,6 +39,23 @@ export class NavElement extends Counter {
     if (title) this.title = title;
     if (icon) this.icon = icon;
     return this;
+  }
+
+  delete() {
+    const index = global.projects.findIndex(project => project.title === this.title);
+    global.currentElement = global.projects[index - 1];
+    if (index !== -1) global.projects.splice(index, 1);
+
+    const deletedProjectInfo = {
+      title: this.title,
+      deletedTaskCount: this.tasks.length
+    }
+
+    Object.keys(this).forEach(key => {
+      this[key] = null;
+    });
+
+    return deletedProjectInfo;
   }
 
   countImportantTasks() {
