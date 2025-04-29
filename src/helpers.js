@@ -48,8 +48,19 @@ export const addProject = (name, icon, isEditable = true) => {
 
 export const addTask = (title, description = null, date = null, isImportant = false, project = findElement('Uncategorized')) => {
   if (project) {
+    console.log(project.addTask)
     const newTask = project.addTask(title, description, date, isImportant);
     refreshApp();
     return newTask;
   } else console.warn('This project does not exist!');
+}
+
+export const moveTask = (task, destination) => {
+  task.update(
+    task.title,
+    task.description,
+    task.date,
+    task.isImportant,
+    destination
+  );
 }

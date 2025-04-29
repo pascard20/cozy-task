@@ -42,7 +42,8 @@ const global = {
     house: `<i class="fa-solid fa-house"></i>`,
     dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
     briefcase: `<i class="fa-solid fa-briefcase"></i>`,
-    game: `<i class="fa-solid fa-gamepad"></i>`
+    game: `<i class="fa-solid fa-gamepad"></i>`,
+    revert: `<i class="fa-solid fa-rotate-left"></i>`
   }
 }
 

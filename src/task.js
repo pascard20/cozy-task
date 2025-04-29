@@ -11,6 +11,7 @@ export class Task {
     this.date = date;
     this.isImportant = isImportant;
     this.isCompleted = false;
+    this.originalProject = null;
   }
 
   get project() {
@@ -66,7 +67,7 @@ export class Task {
   }
 
   returnHTML() {
-    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted, global.icons.edit, global.icons.trash);
+    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted);
   }
 
   getDaysLeft() {

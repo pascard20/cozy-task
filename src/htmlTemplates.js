@@ -138,15 +138,17 @@ export default {
     `;
   },
 
-  getTask(index, title, description, date, isImportant, isCompleted, editIcon, deleteIcon) {
+  getTask(index, title, description, date, isImportant, isCompleted) {
+    const editButtonHTML = `<div class="main__item-setting main__item-edit">${global.icons.edit}</div>`;
+    const revertButtonHTML = `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>`;
     return `
       <li data-index="${index}" class="main__item${isImportant ? ' main__item--important' : ''}${isCompleted ? ' completed' : ''}">
         <div class="main__item-checkbox"></div>
         <div class="main__item-duedate">${date}</div>
         <div class="main__item-name">${title}</div>
         <div class="main__item-description">${description}</div>
-        <div class="main__item-setting main__item-edit">${editIcon}</div>
-        <div class="main__item-setting main__item-delete">${deleteIcon}</div>
+        ${global.currentElement.title === 'Deleted' ? revertButtonHTML : editButtonHTML}
+        <div class="main__item-setting main__item-delete">${global.icons.trash}</div>
       </li>
     `;
   },
@@ -200,6 +202,4 @@ export default {
       </div>
     `;
   }
-
-
 }

@@ -9,7 +9,7 @@ import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
-import { returnAllTasks, findElement } from './helpers.js';
+import { returnAllTasks, findElement, moveTask } from './helpers.js';
 
 const app = (function () {
 
@@ -68,14 +68,15 @@ const app = (function () {
       const taskTitle = capitalizeString(lorem.slice(titleIndex, titleIndex + titleLength).join(' '));
       const taskDescription = capitalizeString(lorem.slice(descriptionIndex, descriptionIndex + descriptionLength).join(' '));
 
-
-      addTask(
+      const originalProject = project === findElement('Deleted') ? global.projects[Math.floor(Math.random() * global.projects.length)] : null;
+      const newTask = addTask(
         taskTitle,
         taskDescription,
         randomDate,
         isImportant,
         project
       );
+      newTask.originalProject = originalProject;
     }
   }
 
@@ -87,7 +88,7 @@ const app = (function () {
       generateRandomTasks(findElement(name));
     }
 
-    generateRandomTasks(global.deleted);
+    generateRandomTasks(findElement('Deleted'));
   }
 
   /* ------------------------------- Update DOM ------------------------------- */
@@ -199,15 +200,21 @@ const app = (function () {
           if (global.currentElement.title === 'Deleted') {
             handleDeleteTask(taskClicked);
           } else {
-            taskClicked.update(
-              taskClicked.title,
-              taskClicked.description,
-              taskClicked.date,
-              taskClicked.isImportant,
-              findElement('Deleted')
-            )
-            createNotification('Task moved to Deleted');
+            taskClicked.originalProject = taskClicked.project;
+            moveTask(taskClicked, findElement('Deleted'));
+            createNotification('Task moved to "Deleted"');
           }
+          refreshApp();
+          return;
+        }
+
+        // Revert task
+        console.log(taskClicked);
+        const revertButton = taskElement.querySelector('.main__item-revert');
+        if (clickedSetting === revertButton) {
+          moveTask(taskClicked, taskClicked.originalProject);
+          taskClicked.originalProject = null;
+          createNotification(`Task moved back to "${taskClicked.project.title}"`);
           refreshApp();
           return;
         }
@@ -253,7 +260,7 @@ const app = (function () {
     })
     if (editedTask) {
       createNotification('Task edited');
-      if (tempProjectTitle !== task.project.title) createNotification(`Task moved from ${tempProjectTitle} to ${task.project.title}`);
+      if (tempProjectTitle !== task.project.title) createNotification(`Task moved from "${tempProjectTitle}" to "${task.project.title}"`);
       refreshApp();
     }
   }
