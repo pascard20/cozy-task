@@ -10,6 +10,7 @@ import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
 import { returnAllTasks, findElement, moveTask } from './helpers.js';
+import { saveProjects } from './localStorage.js';
 
 const app = (function () {
 
@@ -31,7 +32,7 @@ const app = (function () {
     if (!findElement(name)) {
       const newProject = new Project(name, icon, true, isEditable);
       global.projects.push(newProject);
-      updateNav();
+      refreshApp();
       return newProject;
     } else {
       createNotification(`The title "${name}" is already being used`, 'warning')
@@ -129,6 +130,7 @@ const app = (function () {
   const refreshApp = () => {
     updateNav();
     printMain();
+    saveProjects();
   }
 
   const updateProjectOptions = (selectElement, projects) => {
@@ -173,7 +175,7 @@ const app = (function () {
 
     else {
       global.currentElement = tempElement;
-      printMain();
+      refreshApp();
     }
   }
 
@@ -233,7 +235,7 @@ const app = (function () {
 
     if (newProject) {
       global.currentElement = newProject;
-      printMain();
+      refreshApp();
     }
   }
 
@@ -379,7 +381,6 @@ const app = (function () {
     autoHide: false
   });
   updatePopups();
-  printMain();
-
-
+  refreshApp();
+  console.log(JSON.parse(localStorage.getItem('projects')));
 })();
