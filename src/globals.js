@@ -4,6 +4,8 @@ const global = {
 
   deleted: {},
 
+  taskGroups: {},
+
   elem: {
     nav: document.querySelector('.nav'),
     navGroups: document.querySelector('.nav__groups'),

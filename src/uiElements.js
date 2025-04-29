@@ -1,6 +1,7 @@
 import templates from './htmlTemplates.js';
 import global from './globals.js';
 import { Task } from './task.js';
+import { findElement } from './helpers.js';
 
 class Counter {
   returnCounterHTML(htmlClass, isEditable, importantTasksCount, defaultTasksCount) {
@@ -10,7 +11,12 @@ class Counter {
 
 export class MainHeader extends Counter {
   returnCounterHTML(currentElement) {
-    const { defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks();
+    let defaultTaskCount = 0;
+    let importantTaskCount = 0;
+
+    const isCounterHidden = currentElement === global.deleted || findElement('Completed');
+    if (!isCounterHidden) ({ defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks());
+
     return super.returnCounterHTML('main__count', false, importantTaskCount, defaultTaskCount);
   }
 
@@ -88,8 +94,4 @@ export class Project extends NavElement {
     this.tasks.push(newTask);
     return newTask;
   }
-
-  // moveTask(task, destination) {
-  //   destination.addTask(task.title, task.description, task.date, task.isImportant);
-  // }
 }

@@ -7,6 +7,7 @@ import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
+import { returnAllTasks, findElement } from './helpers.js';
 
 const app = (function () {
 
@@ -87,28 +88,6 @@ const app = (function () {
     generateRandomTasks(global.deleted);
   }
 
-  /* --------------------------------- Helpers -------------------------------- */
-
-  const returnAllTasks = () => {
-    const tasks = [];
-    global.projects.forEach(project => {
-      tasks.push(...project.tasks);
-    });
-    return tasks;
-  }
-
-  const findElement = elementID => {
-    const lookup = {
-      ...global.projects.reduce((acc, project) => {
-        acc[project.title] = project;
-        return acc;
-      }, {}),
-      ...taskGroups,
-      [global.deleted.title]: global.deleted
-    }
-    return lookup[elementID];
-  }
-
   /* ------------------------------- Update DOM ------------------------------- */
 
   const printElements = (section, elements, additionalHTML = '') => {
@@ -134,9 +113,9 @@ const app = (function () {
   }
 
   const updateNav = () => {
-    updateTaskGroups(taskGroups, returnAllTasks());
+    updateTaskGroups(global.taskGroups, returnAllTasks());
 
-    printElements(global.elem.navGroups, [...Object.values(taskGroups), global.deleted]);
+    printElements(global.elem.navGroups, [...Object.values(global.taskGroups), global.deleted]);
     printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
 
     global.elem.btnNewProject?.addEventListener('click', handleNewProject);
@@ -274,7 +253,6 @@ const app = (function () {
     const isTaskDeleted = await handleUserConfirmation(popups.deleteTask, isConfirmed => {
       return isConfirmed ? task.delete() : false;
     });
-    console.log(isTaskDeleted)
     if (isTaskDeleted) {
       createNotification('Task deleted');
       refreshApp();
@@ -325,7 +303,7 @@ const app = (function () {
   }
 
   /* ------------------------- Initialize task groups ------------------------- */
-  const taskGroups = {
+  global.taskGroups = {
     All: new TaskGroup('All', global.icons.globe, task => !task.isCompleted),
     Today: new TaskGroup('Today', global.icons.day, task => {
       return task.getDaysLeft() === 0 && !task.isCompleted;
@@ -364,7 +342,7 @@ const app = (function () {
 
   let currentElement;
   testContent();
-  currentElement = taskGroups.Today;
+  currentElement = global.taskGroups.Today;
 
   /* ---------------------- Events and UI initialization ---------------------- */
   global.elem.nav.addEventListener('click', handleNavClick);

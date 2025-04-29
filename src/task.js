@@ -30,15 +30,10 @@ export class Task {
 
   delete() {
     const currentProject = this.project;
-    console.log(this.project)
     if (!currentProject) return;
-
-    console.log(currentProject.tasks)
 
     const index = currentProject.tasks.findIndex(task => task.id === this.id);
     if (index !== -1) currentProject.tasks.splice(index, 1);
-
-    console.log(currentProject.tasks)
 
     Object.keys(this).forEach(key => {
       this[key] = null;
