@@ -30,7 +30,10 @@ const app = (function () {
       projects.push(newProject);
       updateNav();
       return newProject;
-    } else console.warn('Project already exists!');
+    } else {
+      createNotification(`The title ${name} is already being used`, 'warning')
+      console.warn('Project already exists!');
+    }
 
   }
 
@@ -200,53 +203,65 @@ const app = (function () {
 
     if (newProject) {
       currentElement = newProject;
+      printMain();
     }
-    printMain();
 
   }
 
   async function handleNewTask() {
     updatePopups();
-    await handleUserInput(popups.newTask, data => {
+    const newTask = await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
-    }, { '#project': currentElement.title })
-    createNotification('Task created');
+    }, { '#project': currentElement?.title })
+    if (newTask) createNotification('Task created');
     refreshApp();
   }
 
   async function handleEditTask(task) {
     updatePopups();
-    await handleUserInput(popups.editTask, data => {
-      task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
+    const tempProjectTitle = task.project.title;
+    const editedTask = await handleUserInput(popups.editTask, data => {
+      return task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
     }, {
       '#title': task.title,
       '#description': task.description,
       '#dueDate': task.date,
       '#isImportant': task.isImportant,
-      '#project': currentElement.title
+      '#project': task.project.title
     })
-    refreshApp();
+    if (editedTask) {
+      createNotification('Task edited');
+      if (tempProjectTitle !== task.project.title) createNotification(`Task moved from ${tempProjectTitle} to ${task.project.title}`);
+      refreshApp();
+    }
   }
 
   async function handleEditProject(project) {
-    await handleUserInput(popups.editProject, data => {
-      if (!findElement(data.get('title'))) {
-        project.update(data.get('title'), icons[data.get('project-icon')]);
-      } else console.warn('This project/task group already exists!');
+    const tempProjectTitle = project.title;
+    const editedProject = await handleUserInput(popups.editProject, data => {
+      if (!findElement(data.get('title')) || data.get('title') === tempProjectTitle) {
+        return project.update(data.get('title'), icons[data.get('project-icon')]);
+      } else {
+        createNotification(`The title ${data.get('title')} is already being used`, 'warning')
+        console.warn('This project/task group already exists!')
+      };
     }, {
       '#title': project.title,
       '.icon__radio': project.icon
     })
-    refreshApp();
+    if (editedProject) {
+      createNotification('Project edited')
+      if (tempProjectTitle !== editedProject.title) createNotification(`Project renamed from ${tempProjectTitle} to ${editedProject.title}`);
+      refreshApp();
+    }
   }
 
   async function handleUserInput(popup, createFunction, defaultValues = {}) {
     try {
       const data = await popup.waitForUserInput(defaultValues);
-      // console.log('User submitted:', data);
       return createFunction(data);
     } catch (event) {
-      // console.log('User canceled:', event);
+      return false;
     }
   }
 

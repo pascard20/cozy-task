@@ -30,7 +30,7 @@ class Notification {
 
       setTimeout(() => {
         this.element.classList.add('show');
-      }, 10);
+      }, 50);
 
       this.element.querySelector('.notification__exit')?.addEventListener('click', () => this.hide());
       this.timeout();

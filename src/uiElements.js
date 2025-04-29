@@ -32,6 +32,7 @@ export class NavElement extends Counter {
   update(title = null, icon = null) {
     if (title) this.title = title;
     if (icon) this.icon = icon;
+    return this;
   }
 
   countImportantTasks() {

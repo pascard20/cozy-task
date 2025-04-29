@@ -25,6 +25,7 @@ export class Task {
     if (date) this.date = date;
     this.isImportant = isImportant;
     this.changeProject(project);
+    return this;
   }
 
   changeProject(newProject) {
