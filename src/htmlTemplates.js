@@ -190,6 +190,16 @@ export default {
         ${navElementSettingsHTML}
       </li>
     `;
+  },
+
+  getNotification(text) {
+    return `
+      <div class="notification">
+        <div class="notification__content">${text}</div>
+        <div class="notification__exit">x</div>
+      </div>
+    `;
   }
+
 
 }

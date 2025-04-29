@@ -6,6 +6,7 @@ export const elem = {
   navProjects: document.querySelector('.nav__projects'),
   mainHeader: document.querySelector('.main__header'),
   mainTasks: document.querySelector('.main__tasks'),
+  notifications: document.querySelector('.notifications'),
 
   get btnNewTask() {
     return document.querySelector('.main__add-task');
