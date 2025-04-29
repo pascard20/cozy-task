@@ -1,5 +1,5 @@
 import templates from './htmlTemplates.js';
-import { icons } from './globals.js';
+import global from './globals.js';
 import { Task } from './task.js';
 
 class Counter {
@@ -65,7 +65,7 @@ export class NavElement extends Counter {
   }
 
   returnSettingsHTML() {
-    return this.isEditable ? templates.getNavElementSettings(icons.edit, icons.trash) : '';
+    return this.isEditable ? templates.getNavElementSettings(global.icons.edit, global.icons.trash) : '';
   }
 
   returnHTML() {

@@ -1,5 +1,5 @@
 import templates from './htmlTemplates.js';
-import { icons } from './globals.js';
+import global from "./globals.js";
 
 class PopUp {
   constructor(name, headerContent) {
@@ -23,8 +23,8 @@ class PopUp {
     this.handleExit()
   }
 
-  returnHTML(popUpType, popUpClass) {
-    return templates.getPopUp(popUpType, popUpClass = null, this.headerContent, this.name);
+  returnHTML(popUpType, popUpClass = null) {
+    return templates.getPopUp(popUpType, popUpClass, this.headerContent, this.name);
   }
 
   createDOMElement() {
@@ -54,7 +54,7 @@ class PopUp {
       inputs.forEach(input => {
         const type = input.type.toLowerCase();
         if (type === 'radio') {
-          input.checked = icons[input.value] === value;
+          input.checked = global.icons[input.value] === value;
         } else if (type === 'checkbox') {
           input.checked = !!value;
         } else if (type === 'select-one') {
@@ -99,5 +99,53 @@ export class TaskPopUp extends PopUp {
 export class ProjectPopUp extends PopUp {
   returnHTML() {
     return super.returnHTML('project');
+  }
+}
+
+export class DeletePopUp extends PopUp {
+  constructor(name, headerContent = "Are you sure?") {
+    super(name, headerContent);
+  }
+
+  waitForUserConfirmation() {
+    this.DOMElement.showModal();
+    document.activeElement.blur();
+
+    return new Promise((resolve, reject) => {
+      const confirmButton = this.DOMElement.querySelector('.btn--confirm');
+      const rejectButton = this.DOMElement.querySelector('.btn--reject');
+
+      const cleanup = () => {
+        confirmButton.removeEventListener('click', onConfirm);
+        rejectButton.removeEventListener('click', onReject);
+        this.DOMElement.removeEventListener('close', onExit);
+      };
+
+      const onConfirm = () => {
+        cleanup();
+        resolve(true);
+        this.DOMElement.close();
+      }
+
+      const onReject = () => {
+        cleanup();
+        reject(new Error('Action rejected by the user'));
+        this.DOMElement.close();
+      }
+
+      const onExit = () => {
+        cleanup();
+        this.DOMElement.close();
+        reject(new Error('User closed the popup'));
+      }
+
+      confirmButton.addEventListener('click', onConfirm, { once: true });
+      rejectButton.addEventListener('click', onReject, { once: true });
+      this.DOMElement.addEventListener('close', onExit, { once: true });
+    });
+  }
+
+  returnHTML() {
+    return super.returnHTML(this.name, 'delete');
   }
 }

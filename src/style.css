@@ -698,7 +698,8 @@ select.popup__input {
 
   .popup__btn {
     position: static;
-    transform: none;
+    transform: translate(0);
+    left: initial;
   }
 
   p {
@@ -735,6 +736,7 @@ select.popup__input {
 
   .btn {
     margin: 0;
+    position: relative;
   }
 }
 

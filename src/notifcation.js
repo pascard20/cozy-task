@@ -1,7 +1,7 @@
 import templates from "./htmlTemplates";
-import { elem } from "./globals";
+import global from "./globals";
 
-const parent = elem.notifications;
+const parent = global.elem.notifications;
 
 class Notification {
   constructor(message, type = 'info', duration = 4000) {

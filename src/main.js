@@ -2,9 +2,9 @@ import './reset.css';
 import './style.css';
 import { addDays } from 'date-fns';
 import { capitalizeString } from './utils.js';
-import { projects, elem, icons } from './globals.js';
+import global from './globals.js';
 import templates from './htmlTemplates.js';
-import { TaskPopUp, ProjectPopUp } from './popup.js';
+import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
 
@@ -27,7 +27,7 @@ const app = (function () {
   const addProject = (name, icon) => {
     if (!findElement(name)) {
       const newProject = new Project(name, icon);
-      projects.push(newProject);
+      global.projects.push(newProject);
       updateNav();
       return newProject;
     } else {
@@ -80,18 +80,18 @@ const app = (function () {
     generateRandomTasks();
 
     for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
-      addProject(name, icons[icon]);
+      addProject(name, global.icons[icon]);
       generateRandomTasks(findElement(name));
     }
 
-    generateRandomTasks(deleted);
+    generateRandomTasks(global.deleted);
   }
 
   /* --------------------------------- Helpers -------------------------------- */
 
   const returnAllTasks = () => {
     const tasks = [];
-    projects.forEach(project => {
+    global.projects.forEach(project => {
       tasks.push(...project.tasks);
     });
     return tasks;
@@ -99,12 +99,12 @@ const app = (function () {
 
   const findElement = elementID => {
     const lookup = {
-      ...projects.reduce((acc, project) => {
+      ...global.projects.reduce((acc, project) => {
         acc[project.title] = project;
         return acc;
       }, {}),
       ...taskGroups,
-      [deleted.title]: deleted
+      [global.deleted.title]: global.deleted
     }
     return lookup[elementID];
   }
@@ -121,29 +121,25 @@ const app = (function () {
 
   const printMain = () => {
     if (currentElement) {
-      // elem.btnNewTask?.removeEventListener('click', handleCreateTask);
-
-      elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
-      elem.mainTasks.innerHTML = '';
+      global.elem.mainHeader.innerHTML = mainHeader.returnHTML(currentElement);
+      global.elem.mainTasks.innerHTML = '';
       if (currentElement) {
         currentElement.tasks.forEach(task => {
-          elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
+          global.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
 
-      elem.btnNewTask?.addEventListener('click', handleNewTask);
+      global.elem.btnNewTask?.addEventListener('click', handleNewTask);
     }
   }
 
   const updateNav = () => {
     updateTaskGroups(taskGroups, returnAllTasks());
 
-    // elem.btnNewProject?.removeEventListener('click', handleCreateProject);
+    printElements(global.elem.navGroups, [...Object.values(taskGroups), global.deleted]);
+    printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
 
-    printElements(elem.navGroups, [...Object.values(taskGroups), deleted]);
-    printElements(elem.navProjects, projects, templates.getNewProjectButton());
-
-    elem.btnNewProject?.addEventListener('click', handleNewProject);
+    global.elem.btnNewProject?.addEventListener('click', handleNewProject);
   }
 
   const refreshApp = () => {
@@ -165,7 +161,7 @@ const app = (function () {
 
   const updatePopups = () => {
     Object.values(popups).forEach(popup => {
-      updateProjectOptions(popup.DOMElement.querySelector('select'), projects.map(project => project.title));
+      updateProjectOptions(popup.DOMElement.querySelector('select'), global.projects.map(project => project.title));
     })
   }
 
@@ -196,9 +192,9 @@ const app = (function () {
     }
   }
 
-  async function handleNewProject() {
+  const handleNewProject = async () => {
     const newProject = await handleUserInput(popups.newProject, data => {
-      return addProject(data.get('title'), icons[data.get('project-icon')]);
+      return addProject(data.get('title'), global.icons[data.get('project-icon')]);
     })
 
     if (newProject) {
@@ -208,7 +204,7 @@ const app = (function () {
 
   }
 
-  async function handleNewTask() {
+  const handleNewTask = async () => {
     updatePopups();
     const newTask = await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
@@ -217,7 +213,7 @@ const app = (function () {
     refreshApp();
   }
 
-  async function handleEditTask(task) {
+  const handleEditTask = async task => {
     updatePopups();
     const tempProjectTitle = task.project.title;
     const editedTask = await handleUserInput(popups.editTask, data => {
@@ -236,11 +232,11 @@ const app = (function () {
     }
   }
 
-  async function handleEditProject(project) {
+  const handleEditProject = async project => {
     const tempProjectTitle = project.title;
     const editedProject = await handleUserInput(popups.editProject, data => {
       if (!findElement(data.get('title')) || data.get('title') === tempProjectTitle) {
-        return project.update(data.get('title'), icons[data.get('project-icon')]);
+        return project.update(data.get('title'), global.icons[data.get('project-icon')]);
       } else {
         createNotification(`The title ${data.get('title')} is already being used`, 'warning')
         console.warn('This project/task group already exists!')
@@ -256,12 +252,32 @@ const app = (function () {
     }
   }
 
-  async function handleUserInput(popup, createFunction, defaultValues = {}) {
+  const handleUserInput = async (popup, createFunction, defaultValues = {}) => {
     try {
       const data = await popup.waitForUserInput(defaultValues);
       return createFunction(data);
     } catch (event) {
       return false;
+    }
+  }
+
+  const handleUserConfirmation = async (popup, confirmFunction) => {
+    try {
+      const isConfirmed = await popup.waitForUserConfirmation();
+      return isConfirmed ? confirmFunction(isConfirmed) : false;
+    } catch (event) {
+      return false;
+    }
+  }
+
+  const handleTaskDelete = async task => {
+    const isTaskDeleted = await handleUserConfirmation(popups.deleteTask, isConfirmed => {
+      return isConfirmed ? task.delete() : false;
+    });
+    console.log(isTaskDeleted)
+    if (isTaskDeleted) {
+      createNotification('Task deleted');
+      refreshApp();
     }
   }
 
@@ -274,15 +290,31 @@ const app = (function () {
       const clickedSetting = event.target.closest('.main__item-setting');
 
       if (clickedSetting) {
+
+        // Edit task
         const editButton = taskElement.querySelector('.main__item-edit');
         if (clickedSetting === editButton) {
           handleEditTask(taskClicked);
           return;
         }
 
+        // Delete task
         const deleteButton = taskElement.querySelector('.main__item-delete');
         if (clickedSetting === deleteButton) {
-          return
+          if (currentElement.title === 'Deleted') {
+            handleTaskDelete(taskClicked);
+          } else {
+            taskClicked.update(
+              taskClicked.title,
+              taskClicked.description,
+              taskClicked.date,
+              taskClicked.isImportant,
+              findElement('Deleted')
+            )
+            createNotification('Task moved to Deleted');
+          }
+          refreshApp();
+          return;
         }
       }
 
@@ -294,21 +326,21 @@ const app = (function () {
 
   /* ------------------------- Initialize task groups ------------------------- */
   const taskGroups = {
-    All: new TaskGroup('All', icons.globe, task => !task.isCompleted),
-    Today: new TaskGroup('Today', icons.day, task => {
+    All: new TaskGroup('All', global.icons.globe, task => !task.isCompleted),
+    Today: new TaskGroup('Today', global.icons.day, task => {
       return task.getDaysLeft() === 0 && !task.isCompleted;
     }),
-    'This Week': new TaskGroup('This Week', icons.week, task => {
+    'This Week': new TaskGroup('This Week', global.icons.week, task => {
       const days = task.getDaysLeft();
       return ((days >= 0) && (days <= 7)) && !task.isCompleted;
     }),
-    Overdue: new TaskGroup('Overdue', icons.clock, task => {
+    Overdue: new TaskGroup('Overdue', global.icons.clock, task => {
       return task.getDaysLeft() < 0 && !task.isCompleted;
     }),
-    Completed: new TaskGroup('Completed', icons.check, task => task.isCompleted, false)
+    Completed: new TaskGroup('Completed', global.icons.check, task => task.isCompleted, false)
   }
-  const deleted = new Project('Deleted', icons.trash, false, false);
-  addProject('Uncategorized', icons.folder);
+  global.deleted = new Project('Deleted', global.icons.trash, false, false);
+  addProject('Uncategorized', global.icons.folder);
 
   const mainHeader = new MainHeader();
 
@@ -317,7 +349,9 @@ const app = (function () {
     newTask: new TaskPopUp('newTask', 'New task'),
     editTask: new TaskPopUp('editTask', 'Edit task'),
     newProject: new ProjectPopUp('newProject', 'New project'),
-    editProject: new ProjectPopUp('editProject', 'Edit project')
+    editProject: new ProjectPopUp('editProject', 'Edit project'),
+    deleteTask: new DeletePopUp('deleteTask'),
+    deleteProject: new DeletePopUp('deleteProject')
   }
 
   Object.values(popups).forEach(popup => {
@@ -333,8 +367,8 @@ const app = (function () {
   currentElement = taskGroups.Today;
 
   /* ---------------------- Events and UI initialization ---------------------- */
-  elem.nav.addEventListener('click', handleNavClick);
-  elem.mainTasks.addEventListener('click', handleTaskClick);
+  global.elem.nav.addEventListener('click', handleNavClick);
+  global.elem.mainTasks.addEventListener('click', handleTaskClick);
 
   updatePopups();
   printMain();

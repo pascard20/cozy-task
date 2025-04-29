@@ -1,7 +1,7 @@
 import templates from './htmlTemplates.js';
 import { differenceInCalendarDays, format } from 'date-fns';
 import { generateID } from './utils.js';
-import { icons, projects } from './globals.js';
+import global from './globals.js';
 
 export class Task {
   constructor(title, description = null, date = null, isImportant = false) {
@@ -14,7 +14,7 @@ export class Task {
   }
 
   get project() {
-    return projects.find(project => {
+    return [...global.projects, global.deleted].find(project => {
       return project.tasks.some(task => task.id === this.id);
     });
   }
@@ -26,6 +26,25 @@ export class Task {
     this.isImportant = isImportant;
     this.changeProject(project);
     return this;
+  }
+
+  delete() {
+    const currentProject = this.project;
+    console.log(this.project)
+    if (!currentProject) return;
+
+    console.log(currentProject.tasks)
+
+    const index = currentProject.tasks.findIndex(task => task.id === this.id);
+    if (index !== -1) currentProject.tasks.splice(index, 1);
+
+    console.log(currentProject.tasks)
+
+    Object.keys(this).forEach(key => {
+      this[key] = null;
+    });
+
+    return true;
   }
 
   changeProject(newProject) {
@@ -52,7 +71,7 @@ export class Task {
   }
 
   returnHTML() {
-    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted, icons.edit, icons.trash);
+    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted, global.icons.edit, global.icons.trash);
   }
 
   getDaysLeft() {

@@ -1,9 +1,9 @@
-import { icons } from "./globals";
+import global from "./globals";
 
 const getIconSelector = (value, iconHTML) => {
   return `
     <label class="icon-selector">
-      <input type="radio" class="icon__radio" name="project-icon" value="${value}" ${value === Object.keys(icons.projectChoice)[0] ? ' checked' : ''} required/>
+      <input type="radio" class="icon__radio" name="project-icon" value="${value}" ${value === Object.keys(global.icons.projectChoice)[0] ? ' checked' : ''} required/>
       ${iconHTML}
     </label>
   `
@@ -18,7 +18,7 @@ const popUpProjectForm = `
     <div class="popup__input-icon popup__input-area">
       <p><span>Icon</span></p>
       <div class="icon-options">
-      ${Object.entries(icons.projectChoice).map(([value, iconHTML]) => getIconSelector(value, iconHTML)).join('')}
+      ${Object.entries(global.icons.projectChoice).map(([value, iconHTML]) => getIconSelector(value, iconHTML)).join('')}
       </div>
     </div>
     <button class="popup__btn btn" type="submit">Save project</button>
@@ -107,8 +107,8 @@ const getPopUpDeleteBody = popUpType => {
       <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> this ${popUpType}?</p>
       <p class="popup__info-lower">${popUpDeleteSettings[popUpType]}</p>
       <div class="popup__buttons">
-        <button class="popup__btn btn btn--light" type="submit">Cancel</button>
-        <button class="popup__btn btn" type="submit">Delete task</button>
+        <button class="popup__btn btn btn--light btn--reject" type="button">Cancel</button>
+        <button class="popup__btn btn btn--confirm" type="button">Delete task</button>
       </div>
     </div>
   `;
@@ -117,8 +117,8 @@ const getPopUpDeleteBody = popUpType => {
 const popUpSettings = {
   task: popUpTaskForm,
   project: popUpProjectForm,
-  taskDelete: getPopUpDeleteBody('task'),
-  projectDelete: getPopUpDeleteBody('project')
+  deleteTask: getPopUpDeleteBody('task'),
+  deleteProject: getPopUpDeleteBody('project')
 }
 
 /* --------------------------------- EXPORTS -------------------------------- */
