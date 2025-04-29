@@ -6,7 +6,7 @@ import { projects, elem, icons } from './globals.js';
 import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
-import { createNotification, refreshNotifications } from './notifcation.js';
+import { createNotification } from './notifcation.js';
 
 const app = (function () {
 
@@ -150,7 +150,6 @@ const app = (function () {
   const refreshApp = () => {
     updateNav();
     printMain();
-    refreshNotifications(elem.notifications);
   }
 
   const updateProjectOptions = (selectElement, projects) => {
@@ -213,6 +212,7 @@ const app = (function () {
     await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
     }, { '#project': currentElement.name })
+    createNotification('Task created');
     refreshApp();
   }
 

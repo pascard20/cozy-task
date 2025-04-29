@@ -1,7 +1,6 @@
 import templates from "./htmlTemplates";
 import { elem } from "./globals";
 
-const notifications = []
 const parent = elem.notifications;
 
 class Notification {
@@ -10,24 +9,31 @@ class Notification {
     this.type = type;
     this.duration = duration;
     this.element = null;
+    this.timeoutID = null;
   }
 
   returnHTML() {
-    templates.getNotification(this.message);
+    return templates.getNotification(this.message);
   }
 
   timeout() {
-    setTimeout(() => this.hide(), this.duration);
+    this.timeoutID = setTimeout(() => this.hide(), this.duration);
   }
 
-  show(parent) {
+  show() {
+
     parent.insertAdjacentHTML('beforeend', this.returnHTML());
+
     if (!this.element) {
-      const divs = parent.querySelectorAll('div');
-      this.element = divs[divs.length - 1];
-      this.element.classList.add('show');
-      this.element.querySelector('.notification__exit')?.addEventListener('click', this.hide());
-      notifications.push(this);
+      const allNotifications = parent.querySelectorAll('.notification');
+      this.element = allNotifications[allNotifications.length - 1];
+
+      setTimeout(() => {
+        this.element.classList.add('show');
+      }, 10);
+
+      this.element.querySelector('.notification__exit')?.addEventListener('click', () => this.hide());
+      this.timeout();
     }
   }
 
@@ -39,26 +45,22 @@ class Notification {
 
   hide() {
     if (this.element) {
-      clearTimeout(this.timeout());
+      clearTimeout(this.timeoutID);
       this.element.classList.remove('show');
-      this.element.addEventListener('transitionend', () => {
-        const index = notifications.indexOf(this);
-        if (index !== -1) notifications.splice(index, 1);
-        this.delete();
-      });
-      refreshNotifications();
+
+      const onTransitionEnd = (event) => {
+        if (event.propertyName === 'transform') {
+          console.log(event);
+          this.element.remove();
+          this.element.removeEventListener('transitionend', onTransitionEnd);
+          this.delete();
+        }
+      };
+      this.element.addEventListener('transitionend', onTransitionEnd);
     }
   }
 }
 
 export const createNotification = message => {
-  (new Notification(message)).show(parent);
-  refreshNotifications(parent);
-}
-
-export const refreshNotifications = () => {
-  parent.innerHTML = '';
-  notifications.forEach(notification => {
-    notification.show(parent);
-  })
+  (new Notification(message)).show();
 }
