@@ -6,6 +6,7 @@ import { projects, elem, icons } from './globals.js';
 import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
+import { createNotification, refreshNotifications } from './notifcation.js';
 
 const app = (function () {
 
@@ -149,6 +150,7 @@ const app = (function () {
   const refreshApp = () => {
     updateNav();
     printMain();
+    refreshNotifications(elem.notifications);
   }
 
   const updateProjectOptions = (selectElement, projects) => {
@@ -168,10 +170,6 @@ const app = (function () {
       updateProjectOptions(popup.DOMElement.querySelector('select'), projects);
     })
   }
-
-  // const findIconKey = value => {
-  //   return Object.keys(icons).find(key => icons[key] === value) || null;
-  // }
 
   /* -------------------------------- Handlers -------------------------------- */
 

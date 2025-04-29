@@ -192,10 +192,10 @@ export default {
     `;
   },
 
-  getNotification(text) {
+  getNotification(message) {
     return `
       <div class="notification">
-        <div class="notification__content">${text}</div>
+        <div class="notification__content">${message}</div>
         <div class="notification__exit">x</div>
       </div>
     `;
