@@ -67,7 +67,7 @@ export class Task {
   }
 
   returnHTML() {
-    return templates.getTask(this.id, this.title, this.description, this.formatDueDate(), this.isImportant, this.isCompleted);
+    return templates.getTask(this);
   }
 
   getDaysLeft() {

@@ -1,4 +1,5 @@
 import global from "./globals";
+import { findElement } from "./helpers";
 
 const getIconSelector = (value, iconHTML) => {
   return `
@@ -138,15 +139,21 @@ export default {
     `;
   },
 
-  getTask(index, title, description, date, isImportant, isCompleted) {
+  getTask(task) {
     const editButtonHTML = `<div class="main__item-setting main__item-edit">${global.icons.edit}</div>`;
     const revertButtonHTML = `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>`;
+    let projectDisplayHTML = '';
+    if (task.project === findElement('Deleted')) {
+      projectDisplayHTML = ' | ' + task.originalProject.title;
+    } else if (task.isCompleted && global.currentElement === findElement('Completed')) {
+      projectDisplayHTML = ' | ' + task.project.title;
+    }
     return `
-      <li data-index="${index}" class="main__item${isImportant ? ' main__item--important' : ''}${isCompleted ? ' completed' : ''}">
+      <li data-index="${task.id}" class="main__item${task.isImportant ? ' main__item--important' : ''}${task.isCompleted ? ' completed' : ''}">
         <div class="main__item-checkbox"></div>
-        <div class="main__item-duedate">${date}</div>
-        <div class="main__item-name">${title}</div>
-        <div class="main__item-description">${description}</div>
+        <div class="main__item-duedate">${task.formatDueDate()}${projectDisplayHTML}</div>
+        <div class="main__item-name">${task.title}</div>
+        <div class="main__item-description">${task.description}</div>
         ${global.currentElement.title === 'Deleted' ? revertButtonHTML : editButtonHTML}
         <div class="main__item-setting main__item-delete">${global.icons.trash}</div>
       </li>
