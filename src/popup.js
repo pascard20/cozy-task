@@ -57,6 +57,9 @@ class PopUp {
           input.checked = icons[input.value] === value;
         } else if (type === 'checkbox') {
           input.checked = !!value;
+        } else if (type === 'select-one') {
+          const optionExists = Array.from(input.options).some(option => option.value === value);
+          input.value = optionExists ? value : 'Uncategorized';
         } else {
           input.value = value;
         }

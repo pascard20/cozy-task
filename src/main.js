@@ -44,10 +44,6 @@ const app = (function () {
 
   /* ------------------------------ Test content ------------------------------ */
 
-  // const searchProject = title => {
-  //   return projects.find(project => project.name === title);
-  // }
-
   const generateRandomTasks = (project = findElement('Uncategorized')) => {
     const taskCount = Math.floor(Math.random() * 3) + 3;
     for (let i = 0; i < taskCount; i++) {
@@ -101,11 +97,11 @@ const app = (function () {
   const findElement = elementID => {
     const lookup = {
       ...projects.reduce((acc, project) => {
-        acc[project.name] = project;
+        acc[project.title] = project;
         return acc;
       }, {}),
       ...taskGroups,
-      [deleted.name]: deleted
+      [deleted.title]: deleted
     }
     return lookup[elementID];
   }
@@ -166,7 +162,7 @@ const app = (function () {
 
   const updatePopups = () => {
     Object.values(popups).forEach(popup => {
-      updateProjectOptions(popup.DOMElement.querySelector('select'), projects);
+      updateProjectOptions(popup.DOMElement.querySelector('select'), projects.map(project => project.title));
     })
   }
 
@@ -202,7 +198,9 @@ const app = (function () {
       return addProject(data.get('title'), icons[data.get('project-icon')]);
     })
 
-    if (newProject) currentElement = newProject;
+    if (newProject) {
+      currentElement = newProject;
+    }
     printMain();
 
   }
@@ -211,7 +209,7 @@ const app = (function () {
     updatePopups();
     await handleUserInput(popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
-    }, { '#project': currentElement.name })
+    }, { '#project': currentElement.title })
     createNotification('Task created');
     refreshApp();
   }
@@ -225,7 +223,7 @@ const app = (function () {
       '#description': task.description,
       '#dueDate': task.date,
       '#isImportant': task.isImportant,
-      '#project': currentElement.name
+      '#project': currentElement.title
     })
     refreshApp();
   }
@@ -236,7 +234,7 @@ const app = (function () {
         project.update(data.get('title'), icons[data.get('project-icon')]);
       } else console.warn('This project/task group already exists!');
     }, {
-      '#title': project.name,
+      '#title': project.title,
       '.icon__radio': project.icon
     })
     refreshApp();

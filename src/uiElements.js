@@ -15,22 +15,22 @@ export class MainHeader extends Counter {
   }
 
   returnHTML(currentElement) {
-    return currentElement ? templates.getMainHeader(currentElement.name, this.returnCounterHTML(currentElement)) : '';
+    return currentElement ? templates.getMainHeader(currentElement.title, this.returnCounterHTML(currentElement)) : '';
   }
 }
 
 export class NavElement extends Counter {
-  constructor(name, icon, isCounting = true, isEditable = true, tasks = []) {
+  constructor(title, icon, isCounting = true, isEditable = true, tasks = []) {
     super();
-    this.name = name;
+    this.title = title;
     this.icon = icon;
     this.isCounting = isCounting;
     this.tasks = tasks;
     this.isEditable = isEditable;
   }
 
-  update(name = null, icon = null) {
-    if (name) this.name = name;
+  update(title = null, icon = null) {
+    if (title) this.title = title;
     if (icon) this.icon = icon;
   }
 
@@ -68,7 +68,7 @@ export class NavElement extends Counter {
   }
 
   returnHTML() {
-    return templates.getNavElement(this.name, this.icon, this.returnCounterHTML(), this.returnSettingsHTML());
+    return templates.getNavElement(this.title, this.icon, this.returnCounterHTML(), this.returnSettingsHTML());
   }
 }
 

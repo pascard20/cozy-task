@@ -50,7 +50,6 @@ class Notification {
 
       const onTransitionEnd = (event) => {
         if (event.propertyName === 'transform') {
-          console.log(event);
           this.element.remove();
           this.element.removeEventListener('transitionend', onTransitionEnd);
           this.delete();
