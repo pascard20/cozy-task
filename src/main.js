@@ -44,7 +44,7 @@ const app = (function () {
   /* ------------------------------ Test content ------------------------------ */
 
   const generateRandomTasks = (project = findElement('Uncategorized')) => {
-    const taskCount = Math.floor(Math.random() * 3) + 3;
+    const taskCount = Math.floor(Math.random() * 4) + 3;
     for (let i = 0; i < taskCount; i++) {
       const isImportant = Math.random() < 1 / 4;
       const randomOffset = Math.floor(Math.random() * 8) - 2;
@@ -95,17 +95,24 @@ const app = (function () {
       if (randomCompletionDate) newTask.completionDate = randomCompletionDate;
       if (randomDeletionDate) newTask.deletionDate = randomDeletionDate;
     }
+    return taskCount;
   }
 
   const testContent = () => {
-    generateRandomTasks();
+    let newTaskCount = 0;
+
+    newTaskCount += generateRandomTasks();
 
     for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
-      if (!findElement(name)) addProject(name, global.icons[icon]);
-      generateRandomTasks(findElement(name));
+      if (!findElement(name)) {
+        addProject(name, global.icons[icon]);
+        createNotification(`Project ${name} created`);
+      };
+      newTaskCount += generateRandomTasks(findElement(name));
     }
 
-    generateRandomTasks(findElement('Deleted'));
+    newTaskCount += generateRandomTasks(findElement('Deleted'));
+    createNotification(`${newTaskCount} tasks created`)
   }
 
   /* ------------------------------- Update DOM ------------------------------- */
@@ -252,6 +259,7 @@ const app = (function () {
 
     if (newProject) {
       global.currentElement = newProject;
+      createNotification(`Project "${newProject.title}" created`);
       refreshApp();
     }
 
@@ -338,8 +346,8 @@ const app = (function () {
       return isConfirmed ? project.delete() : false;
     })
     if (deletedProjectInfo) {
-      createNotification(`"${deletedProjectInfo.title}" project deleted`);
-      createNotification(`${deletedProjectInfo.deletedTaskCount} task${deletedProjectInfo.deletedTaskCount !== 1 ? 's' : ''} deleted`);
+      createNotification(`Project "${deletedProjectInfo.title}" deleted`);
+      if (deletedProjectInfo.deletedTaskCount) createNotification(`${deletedProjectInfo.deletedTaskCount} task${deletedProjectInfo.deletedTaskCount !== 1 ? 's' : ''} deleted`);
       refreshApp();
     }
   }
@@ -385,7 +393,7 @@ const app = (function () {
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius que obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem que ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
-  testContent();
+  // testContent();
   if (!global.currentElement) global.currentElement = global.taskGroups.All;
   appStorage.save();
 
@@ -393,6 +401,10 @@ const app = (function () {
 
   global.elem.nav.addEventListener('click', handleNavClick);
   global.elem.mainTasks.addEventListener('click', handleTaskClick);
+  global.elem.demoAddButton.addEventListener('click', testContent);
+  global.elem.demoAddButton.addEventListener('click', () => {
+    createNotification('Feel free to click again for more tasks :)');
+  }, { once: true });
 
   /* ------------------------------ Initialize UI ----------------------------- */
 

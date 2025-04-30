@@ -20,6 +20,8 @@ const global = {
     mainTasksWrapper: document.querySelector('.main__tasks-wrapper'),
     notifications: document.querySelector('.notifications'),
     allNavSection: document.querySelectorAll('.nav__section'),
+    demoAddButton: document.querySelector('.demo-add'),
+    demoResetButton: document.querySelector('.demo-reset'),
 
     get btnNewTask() {
       return document.querySelector('.main__add-task');

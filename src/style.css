@@ -595,6 +595,7 @@ select.popup__input {
     span {
       position: relative;
       z-index: 2;
+      color: var(--colorTextLight)
     }
 
     &::before {
