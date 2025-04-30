@@ -44,15 +44,20 @@ const app = (function () {
   /* ------------------------------ Test content ------------------------------ */
 
   const generateRandomTasks = (project = findElement('Uncategorized')) => {
-    const taskCount = Math.floor(Math.random() * 4) + 3;
+    const taskCount = Math.floor(Math.random() * 3) + 2;
     for (let i = 0; i < taskCount; i++) {
-      const isImportant = Math.random() < 1 / 4;
-      const randomOffset = Math.floor(Math.random() * 8) - 2;
-      const randomDate = addDays(new Date(), randomOffset);
+      const isImportant = Math.random() < 1 / 6;
+
+      const hasDate = Math.random() < 6 / 7;
+      let randomDate;
+      if (hasDate) {
+        const randomOffset = Math.floor(Math.random() * 8) - 2;
+        randomDate = addDays(new Date(), randomOffset);
+      } else randomDate = null;
 
       let randomCompletionDate, randomDeletionDate;
 
-      const isCompleted = Math.random() < 1 / 6;
+      const isCompleted = Math.random() < 1 / 5;
       if (isCompleted) {
         const randomCompletionOffset = Math.floor(Math.random() * 10) - 10;
         const randomHour = Math.floor(Math.random() * 24);
@@ -83,6 +88,7 @@ const app = (function () {
       const taskDescription = capitalizeString(lorem.slice(descriptionIndex, descriptionIndex + descriptionLength).join(' '));
 
       const originalProject = project === findElement('Deleted') ? global.projects[Math.floor(Math.random() * global.projects.length)] : null;
+      console.log({ project, originalProject })
       const newTask = addTask(
         taskTitle,
         taskDescription,
@@ -92,28 +98,76 @@ const app = (function () {
       );
       newTask.originalProject = originalProject;
       newTask.isCompleted = isCompleted;
+      newTask.demoContent = true;
       if (randomCompletionDate) newTask.completionDate = randomCompletionDate;
       if (randomDeletionDate) newTask.deletionDate = randomDeletionDate;
     }
     return taskCount;
   }
 
-  const testContent = () => {
-    let newTaskCount = 0;
+  const createDemoContent = () => {
+    const createdCount = {
+      projects: 0,
+      tasks: 0
+    }
 
-    newTaskCount += generateRandomTasks();
+    createdCount.tasks += generateRandomTasks();
 
     for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
       if (!findElement(name)) {
-        addProject(name, global.icons[icon]);
-        createNotification(`Project ${name} created`);
+        const newProject = addProject(name, global.icons[icon]);
+        newProject.demoContent = true;
+        createdCount.projects += 1;
       };
-      newTaskCount += generateRandomTasks(findElement(name));
+      createdCount.tasks += generateRandomTasks(findElement(name));
     }
 
-    newTaskCount += generateRandomTasks(findElement('Deleted'));
-    createNotification(`${newTaskCount} tasks created`)
+    createdCount.tasks += generateRandomTasks(findElement('Deleted'));
+    if (createdCount.projects) createNotification(`${createdCount.projects} project${createdCount.projects ? 's' : ''} created`)
+    if (createdCount.tasks) createNotification(`${createdCount.tasks} task${createdCount.tasks ? 's' : ''} created`)
   }
+
+  const deleteDemoContent = async () => {
+    return await handleUserConfirmation(global.popups.deleteDemo, isConfirmed => {
+      return isConfirmed ? (() => {
+        const deletedCount = {
+          projects: 0,
+          tasks: 0
+        }
+
+        // Collect all demo tasks that need to be deleted
+        const tasksToDelete = [];
+        [...global.projects, global.deleted].forEach(project => {
+          project.tasks.forEach(task => {
+            if (task.demoContent) {
+              tasksToDelete.push(task);
+            }
+          });
+        });
+
+        // Delete all collected tasks
+        tasksToDelete.forEach(task => {
+          task.delete();
+          deletedCount.tasks += 1;
+        });
+
+        // Handle projects after all tasks have been removed
+        const projectsToDelete = global.projects.filter(
+          project => project.demoContent && project.tasks.length === 0
+        );
+
+        projectsToDelete.forEach(project => {
+          project.delete();
+          deletedCount.projects += 1;
+        });
+
+        refreshApp();
+        if (deletedCount.projects) createNotification(`${deletedCount.projects} project${deletedCount.projects !== 1 ? 's' : ''} deleted`);
+        if (deletedCount.tasks) createNotification(`${deletedCount.tasks} task${deletedCount.tasks !== 1 ? 's' : ''} deleted`);
+        if (!deletedCount.projects && !deletedCount.tasks) createNotification('No demo content found');
+      })() : false;
+    })
+  };
 
   /* ------------------------------- Update DOM ------------------------------- */
 
@@ -289,6 +343,7 @@ const app = (function () {
     if (editedTask) {
       createNotification('Task edited');
       if (tempProjectTitle !== task.project.title) createNotification(`Task moved from "${tempProjectTitle}" to "${task.project.title}"`);
+      editedTask.demoContent = false;
       refreshApp();
     }
   }
@@ -309,6 +364,7 @@ const app = (function () {
     if (editedProject) {
       createNotification('Project edited')
       if (tempProjectTitle !== editedProject.title) createNotification(`Project renamed from "${tempProjectTitle}" to "${editedProject.title}"`);
+      editedProject.demoContent = false;
       refreshApp();
     }
   }
@@ -381,7 +437,8 @@ const app = (function () {
     newProject: new ProjectPopUp('newProject', 'New project'),
     editProject: new ProjectPopUp('editProject', 'Edit project'),
     deleteTask: new DeletePopUp('deleteTask'),
-    deleteProject: new DeletePopUp('deleteProject')
+    deleteProject: new DeletePopUp('deleteProject'),
+    deleteDemo: new DeletePopUp('deleteDemo')
   }
 
   Object.values(global.popups).forEach(popup => {
@@ -401,10 +458,11 @@ const app = (function () {
 
   global.elem.nav.addEventListener('click', handleNavClick);
   global.elem.mainTasks.addEventListener('click', handleTaskClick);
-  global.elem.demoAddButton.addEventListener('click', testContent);
+  global.elem.demoAddButton.addEventListener('click', createDemoContent);
   global.elem.demoAddButton.addEventListener('click', () => {
     createNotification('Feel free to click again for more tasks :)');
   }, { once: true });
+  global.elem.demoDeleteButton.addEventListener('click', deleteDemoContent);
 
   /* ------------------------------ Initialize UI ----------------------------- */
 

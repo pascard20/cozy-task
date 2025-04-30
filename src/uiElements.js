@@ -43,7 +43,7 @@ export class NavElement extends Counter {
 
   delete() {
     const index = global.projects.findIndex(project => project.title === this.title);
-    global.currentElement = global.projects[index - 1];
+    if (global.currentElement === this) global.currentElement = global.projects[index - 1];
     if (index !== -1) global.projects.splice(index, 1);
 
     const deletedProjectInfo = {

@@ -20,7 +20,7 @@ export default {
     const { currentElement, appStorage } = global;
 
     const currentTitle = currentElement?.title || '';
-    localStorage.setItem('currentElement', JSON.stringify(currentTitle));
+    localStorage.setItem('currentElementTitle', JSON.stringify(currentTitle));
 
     if (!Array.isArray(appStorage) || appStorage.length === 0) return; // Check whether appStorage is a non-empty array
 
@@ -31,6 +31,7 @@ export default {
         icon: project.icon,
         isCounting: project.isCounting,
         isEditable: project.isEditable,
+        demoContent: project.demoContent ? true : false,
         tasks: project.tasks.map(task => ({
           id: task.id,
           title: task.title,
@@ -40,8 +41,8 @@ export default {
           isCompleted: task.isCompleted,
           completionDate: task.completionDate,
           deletionDate: task.deletionDate,
-          originalProject: task.originalProject ? task.originalProject.title : null
-
+          originalProject: task.originalProject ? task.originalProject.title : null,
+          demoContent: task.demoContent ? true : false
         }))
       })
       );
@@ -53,10 +54,10 @@ export default {
 
     // Ensure there are no errors connected to the JSON.parse()
     try {
-      const currentTitle = JSON.parse(localStorage.getItem('currentElement'));
-      result.currentElement = currentTitle;
+      const currentTitle = JSON.parse(localStorage.getItem('currentElementTitle'));
+      result.currentElementTitle = currentTitle;
     } catch {
-      result.currentElement = '';
+      result.currentElementTitle = '';
     }
 
     const rawData = localStorage.getItem('appData');
@@ -74,6 +75,7 @@ export default {
         projectData.isCounting,
         projectData.isEditable
       );
+      project.demoContent = projectData.demoContent;
 
       project.tasks = projectData.tasks.map(taskData => {
         const task = new Task(
@@ -87,6 +89,7 @@ export default {
         task._originalProjectTitle = taskData.originalProject; // It stores originalProject's title for now. Need to link the actual object afterwards.
         task.completionDate = taskData.completionDate ? new Date(taskData.completionDate) : null;
         task.deletionDate = taskData.deletionDate ? new Date(taskData.deletionDate) : null;
+        task.demoContent = taskData.demoContent;
         return task;
       });
 
@@ -103,14 +106,15 @@ export default {
     const data = this.read();
     if (!data) return;
 
-    const { currentElement, appData } = data;
+    const { currentElementTitle, appData } = data;
     clearProjects();
 
     for (const project of appData) {
       project.title === 'Deleted' ? global.deleted = project : global.projects.push(project);
     }
 
-    global.currentElement = findElement(currentElement);
+    if (findElement(currentElementTitle)) global.currentElement = findElement(currentElementTitle);
+    else global.currentElement = global.taskGroups.All;
     applyOriginalProjects(appData);
   }
 }

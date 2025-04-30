@@ -99,13 +99,14 @@ const popUpTaskForm = `
 
 const popUpDeleteSettings = {
   task: 'This action will <span class="bold">remove this task permanently.</span>',
-  project: 'This action will <span class="bold">remove this project and all its tasks permanently.</span>'
+  project: 'This action will <span class="bold">remove this project and all its tasks permanently.</span>',
+  demo: `All demo projects and tasks <span class="bold">will be removed</span>, except those you've edited.`
 }
 
-const getPopUpDeleteBody = popUpType => {
+const getPopUpDeleteBody = (popUpType, popUpHeaderText) => {
   return `
     <div class="popup__body">
-      <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> this ${popUpType}?</p>
+      <p class="popup__info-upper">Do you really want to <span class="bold">delete</span> ${popUpHeaderText}?</p>
       <p class="popup__info-lower">${popUpDeleteSettings[popUpType]}</p>
       <div class="popup__buttons">
         <button class="popup__btn btn btn--light btn--reject" type="button">Cancel</button>
@@ -118,8 +119,9 @@ const getPopUpDeleteBody = popUpType => {
 const popUpSettings = {
   task: popUpTaskForm,
   project: popUpProjectForm,
-  deleteTask: getPopUpDeleteBody('task'),
-  deleteProject: getPopUpDeleteBody('project')
+  deleteTask: getPopUpDeleteBody('task', 'this task'),
+  deleteProject: getPopUpDeleteBody('project', 'this project'),
+  deleteDemo: getPopUpDeleteBody('demo', 'all demo content')
 }
 
 /* --------------------------------- EXPORTS -------------------------------- */
@@ -141,10 +143,10 @@ export default {
 
   getTask(task) {
     const editButtonHTML = `<div class="main__item-setting main__item-edit">${global.icons.edit}</div>`;
-    const revertButtonHTML = `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>`;
+    const revertButtonHTML = task.originalProject ? `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>` : '';
     let projectDisplayHTML = '';
     if (task.project === findElement('Deleted')) {
-      projectDisplayHTML = ' | ' + task.originalProject?.title;
+      projectDisplayHTML = task.originalProject ? ' | ' + task.originalProject.title : '';
     } else if (task.isCompleted && global.currentElement === findElement('Completed')) {
       projectDisplayHTML = ' | ' + task.project.title;
     }
