@@ -22,7 +22,7 @@
 html,
 body {
   height: 100%;
-  min-height: 650px;
+  min-height: 850px;
 }
 
 body {
@@ -840,11 +840,66 @@ select.popup__input {
   margin-right: -.25rem;
 }
 
+/* --------------------------------- CREDITS -------------------------------- */
+
+.nav__demo-buttons {
+  margin-top: .5rem;
+  margin-bottom: -1rem;
+  flex-grow: 1;
+  justify-content: flex-end;
+  color: var(--colorTextOpaque);
+
+  .nav__item {
+    justify-content: flex-start;
+  }
+
+  .nav__item-icon {
+    color: var(--colorTextOpaque);
+  }
+}
+
+.credits {
+  font-size: 1.125rem;
+  margin-left: .5rem;
+  margin-top: .675rem;
+}
+
+.credits__upper {
+  font-size: calc(.75rem + 1px);
+  letter-spacing: .01em;
+  margin-left: 2rem;
+}
+
+.credits__name,
+.credits__link {
+  color: var(--colorTextLight);
+}
+
+.credits__name,
+.credits__link {
+  transition: .15s;
+
+  &:hover {
+    color: var(--colorTextDark);
+  }
+}
+
+.credits__link {
+  display: inline-block;
+  transform: scale(1);
+  margin-right: .5rem;
+
+  &:hover {
+    transform: scale(1.25);
+  }
+}
+
 /* ---------------------------------- UTILS --------------------------------- */
 
 .bold {
   font-weight: bold;
 }
+
 
 /* -------------------------------- SIMPLEBAR ------------------------------- */
 

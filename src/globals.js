@@ -31,6 +31,7 @@ const global = {
   },
 
   icons: {
+    add: `<i class="fa-solid fa-plus"></i>`,
     briefcase: `<i class="fa-solid fa-briefcase"></i>`,
     check: `<i class="fa-solid fa-check"></i>`,
     clock: `<i class="fa-solid fa-clock"></i>`,
