@@ -32,6 +32,23 @@ body {
   display: flex;
 }
 
+.app-section {
+  overflow: hidden;
+  --transitionTime: .75s;
+
+  &>* {
+    opacity: 0;
+    transition: opacity 0s transform 0s;
+    transform: translateY(1rem);
+  }
+
+  &.loaded>* {
+    opacity: 1;
+    transition: opacity var(--transitionTime) ease-out, transform var(--transitionTime) ease;
+    transform: translateY(0rem);
+  }
+}
+
 /* ----------------------------------- NAV ---------------------------------- */
 
 .nav {

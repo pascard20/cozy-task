@@ -10,9 +10,13 @@ import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
 import { returnAllTasks, findElement, moveTask } from './helpers.js';
-import { saveProjects } from './localStorage.js';
+import appStorage from './appStorage.js';
 
 const app = (function () {
+
+  global.elem.allNavSection.forEach(section => {
+    section.classList.remove('loaded');
+  })
 
   /* ---------------------------- App functionality --------------------------- */
 
@@ -131,7 +135,7 @@ const app = (function () {
   const refreshApp = () => {
     updateNav();
     printMain();
-    saveProjects();
+    appStorage.save();
   }
 
   const updateProjectOptions = (selectElement, projects) => {
@@ -342,8 +346,11 @@ const app = (function () {
     }),
     Completed: new TaskGroup('Completed', global.icons.check, task => task.isCompleted, false)
   }
-  global.deleted = new Project('Deleted', global.icons.trash, false, false);
-  addProject('Uncategorized', global.icons.folder, false);
+
+  appStorage.load();
+  if (!global.deleted) global.deleted = new Project('Deleted', global.icons.trash, false, false);
+  if (!findElement('Uncategorized')) addProject('Uncategorized', global.icons.folder, false);
+  console.log(appStorage.read());
 
   /* ---------------------------- Initialize popups --------------------------- */
 
@@ -365,8 +372,9 @@ const app = (function () {
   const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
-  testContent();
-  global.currentElement = global.taskGroups.Today;
+  // testContent();
+  if (!global.currentElement) global.currentElement = global.taskGroups.All;
+  appStorage.save();
 
   /* --------------------------------- Events --------------------------------- */
 
@@ -381,7 +389,10 @@ const app = (function () {
   new SimpleBar(global.elem.navProjectsWrapper, {
     autoHide: false
   });
+
   updatePopups();
   refreshApp();
-  console.log(JSON.parse(localStorage.getItem('projects')));
+  document.querySelectorAll('.app-section').forEach(section => {
+    section.classList.add('loaded');
+  });
 })();

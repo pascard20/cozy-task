@@ -64,3 +64,8 @@ export const moveTask = (task, destination) => {
     destination
   );
 }
+
+export const clearProjects = () => {
+  global.projects = [];
+  global.deleted = {};
+}

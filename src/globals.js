@@ -19,6 +19,7 @@ const global = {
     mainTasks: document.querySelector('.main__tasks'),
     mainTasksWrapper: document.querySelector('.main__tasks-wrapper'),
     notifications: document.querySelector('.notifications'),
+    allNavSection: document.querySelectorAll('.nav__section'),
 
     get btnNewTask() {
       return document.querySelector('.main__add-task');
@@ -48,6 +49,13 @@ const global = {
     week: `<i class="fa-solid fa-calendar-week"></i>`
   }
 }
+
+Object.defineProperty(global, 'appStorage', {
+  get() {
+    return [...global.projects, global.deleted];
+  },
+  enumerable: true
+});
 
 const projectIconKeys = [
   'folder',
