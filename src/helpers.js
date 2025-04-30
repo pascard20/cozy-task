@@ -21,7 +21,9 @@ export const findElement = elementID => {
   return lookup[elementID];
 }
 
-export const updateTaskGroups = (taskGroups, tasks) => {
+export const updateTaskGroups = () => {
+  const taskGroups = global.taskGroups;
+  const tasks = returnAllTasks();
   Object.values(taskGroups).forEach(taskGroup => {
     taskGroup.tasks = [];
   })
@@ -33,27 +35,39 @@ export const updateTaskGroups = (taskGroups, tasks) => {
   })
 }
 
-export const addProject = (name, icon, isEditable = true) => {
-  if (!findElement(name)) {
-    const newProject = new Project(name, icon, true, isEditable);
-    global.projects.push(newProject);
-    updateNav();
-    return newProject;
-  } else {
-    createNotification(`The title "${name}" is already being used`, 'warning')
-    console.warn('Project already exists!');
-    return false;
-  }
+export const sortProjectTasks = project => {
+  project.tasks.sort((a, b) => {
+    const bDateInfo = b.getDateInfo();
+    const bDate = bDateInfo.dateObj;
+    const aDateInfo = a.getDateInfo();
+    const aDate = aDateInfo.dateObj;
 
-}
+    const isDefaultTask = dateInfo => {
+      return (!dateInfo.isCompleted && !dateInfo.isDeleted);
+    }
 
-export const addTask = (title, description = null, date = null, isImportant = false, project = findElement('Uncategorized')) => {
-  if (project) {
-    const newTask = project.addTask(title, description, date, isImportant);
-    refreshApp();
-    return newTask;
-  } else console.warn('This project does not exist!');
-}
+    // 1. Tasks without a date come first
+    if (!aDate && bDate) return -1;
+    if (aDate && !bDate) return 1;
+
+    // 2. For default tasks compare only date, for others include time as well
+    if (aDate && bDate) {
+      const aDateForSorting = isDefaultTask(aDateInfo) ? new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate()) : new Date(aDateInfo.dateObj);
+      const bDateForSorting = isDefaultTask(bDateInfo) ? new Date(bDate.getFullYear(), bDate.getMonth(), bDate.getDate()) : new Date(bDateInfo.dateObj);
+
+      const dateDiff = aDateForSorting - bDateForSorting;
+      if (dateDiff !== 0) return dateDiff; // If dates are different, return the difference
+    }
+
+    // 3. If dates are the same (or both null), compare by importance
+    if (a.isImportant !== b.isImportant) {
+      return a.isImportant ? -1 : 1; // Important tasks (true) come first
+    }
+
+    // 4. If both have the same importance, sort by title
+    return a.title.localeCompare(b.title);
+  });
+};
 
 export const moveTask = (task, destination) => {
   task.update(

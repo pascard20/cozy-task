@@ -9,7 +9,7 @@ import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
-import { returnAllTasks, findElement, moveTask } from './helpers.js';
+import { findElement, moveTask, updateTaskGroups, sortProjectTasks } from './helpers.js';
 import appStorage from './appStorage.js';
 
 const app = (function () {
@@ -19,18 +19,6 @@ const app = (function () {
   })
 
   /* ---------------------------- App functionality --------------------------- */
-
-  const updateTaskGroups = (taskGroups, tasks) => {
-    Object.values(taskGroups).forEach(taskGroup => {
-      taskGroup.tasks = [];
-    })
-
-    tasks.forEach(task => {
-      Object.values(taskGroups).forEach(taskGroup => {
-        if (taskGroup.countRule(task)) taskGroup.tasks.push(task);
-      })
-    })
-  }
 
   const addProject = (name, icon, isEditable = true) => {
     if (!findElement(name)) {
@@ -43,7 +31,6 @@ const app = (function () {
       console.warn('Project already exists!');
       return false;
     }
-
   }
 
   const addTask = (title, description = null, date = null, isImportant = false, project = findElement('Uncategorized')) => {
@@ -62,6 +49,27 @@ const app = (function () {
       const isImportant = Math.random() < 1 / 4;
       const randomOffset = Math.floor(Math.random() * 8) - 2;
       const randomDate = addDays(new Date(), randomOffset);
+
+      let randomCompletionDate, randomDeletionDate;
+
+      const isCompleted = Math.random() < 1 / 6;
+      if (isCompleted) {
+        const randomCompletionOffset = Math.floor(Math.random() * 10) - 10;
+        const randomHour = Math.floor(Math.random() * 24);
+        const randomMinutes = Math.floor(Math.random() * 60);
+        const randomSeconds = Math.floor(Math.random() * 60);
+        randomCompletionDate = addDays(new Date(), randomCompletionOffset);
+        randomCompletionDate.setHours(randomHour, randomMinutes, randomSeconds);
+      }
+
+      if (project === findElement('Deleted')) {
+        const randomDeletionOffset = Math.floor(Math.random() * 10) - 10;
+        const randomHour = Math.floor(Math.random() * 24);
+        const randomMinutes = Math.floor(Math.random() * 60);
+        const randomSeconds = Math.floor(Math.random() * 60);
+        randomDeletionDate = addDays(new Date(), randomDeletionOffset);
+        randomDeletionDate.setHours(randomHour, randomMinutes, randomSeconds);
+      }
 
       const titleLength = Math.floor(Math.random() * 3) + 2;
       const titleIndex = Math.floor(Math.random() * loremIpsumSplit.length);
@@ -83,6 +91,9 @@ const app = (function () {
         project
       );
       newTask.originalProject = originalProject;
+      newTask.isCompleted = isCompleted;
+      if (randomCompletionDate) newTask.completionDate = randomCompletionDate;
+      if (randomDeletionDate) newTask.deletionDate = randomDeletionDate;
     }
   }
 
@@ -90,7 +101,7 @@ const app = (function () {
     generateRandomTasks();
 
     for (const [name, icon] of [['Work', 'briefcase'], ['House', 'house'], ['Hobby', 'game']]) {
-      addProject(name, global.icons[icon]);
+      if (!findElement(name)) addProject(name, global.icons[icon]);
       generateRandomTasks(findElement(name));
     }
 
@@ -104,13 +115,14 @@ const app = (function () {
   const printElements = (section, elements, additionalHTML = '') => {
     section.innerHTML = "";
     elements.forEach(element => {
-      section.insertAdjacentHTML('beforeend', element.returnHTML());
+      if (element.returnHTML) section.insertAdjacentHTML('beforeend', element.returnHTML());
     })
     section.insertAdjacentHTML('beforeend', additionalHTML);
   }
 
   const printMain = () => {
     if (global.currentElement) {
+      sortProjectTasks(global.currentElement);
       global.elem.mainHeader.innerHTML = mainHeader.returnHTML(global.currentElement);
       global.elem.mainTasks.innerHTML = '';
       if (global.currentElement) {
@@ -118,13 +130,12 @@ const app = (function () {
           global.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
-
       global.elem.btnNewTask?.addEventListener('click', handleNewTask);
     }
   }
 
   const updateNav = () => {
-    updateTaskGroups(global.taskGroups, returnAllTasks());
+    updateTaskGroups();
 
     printElements(global.elem.navGroups, [...Object.values(global.taskGroups), global.deleted]);
     printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
@@ -208,6 +219,7 @@ const app = (function () {
             handleDeleteTask(taskClicked);
           } else {
             taskClicked.originalProject = taskClicked.project;
+            taskClicked.deletionDate = new Date();
             moveTask(taskClicked, findElement('Deleted'));
             createNotification('Task moved to "Deleted"');
           }
@@ -219,6 +231,7 @@ const app = (function () {
         const revertButton = taskElement.querySelector('.main__item-revert');
         if (clickedSetting === revertButton) {
           moveTask(taskClicked, taskClicked.originalProject);
+          taskClicked.deletionDate = null;
           taskClicked.originalProject = null;
           createNotification(`Task moved back to "${taskClicked.project.title}"`);
           refreshApp();
@@ -227,7 +240,7 @@ const app = (function () {
       }
 
       taskClicked.isCompleted = !taskClicked.isCompleted;
-      taskElement.classList.toggle('completed');
+      taskClicked.completionDate ? taskClicked.completionDate = null : taskClicked.completionDate = new Date();
       refreshApp();
     } else console.warn('Task not found');
   }
@@ -348,9 +361,9 @@ const app = (function () {
   }
 
   appStorage.load();
-  if (!global.deleted) global.deleted = new Project('Deleted', global.icons.trash, false, false);
+  if (!global.deleted || Object.keys(global.deleted).length === 0) global.deleted = new Project('Deleted', global.icons.trash, false, false);
   if (!findElement('Uncategorized')) addProject('Uncategorized', global.icons.folder, false);
-  console.log(appStorage.read());
+  // console.log(appStorage.read());
 
   /* ---------------------------- Initialize popups --------------------------- */
 
@@ -369,10 +382,10 @@ const app = (function () {
 
   /* -------------------------- Generate test content ------------------------- */
 
-  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Cum, eius cumque obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem cumque ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
+  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius que obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem que ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
   const loremIpsumSplit = loremIpsum.split(' ');
 
-  // testContent();
+  testContent();
   if (!global.currentElement) global.currentElement = global.taskGroups.All;
   appStorage.save();
 

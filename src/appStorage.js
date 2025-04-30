@@ -3,6 +3,18 @@ import { Project } from './uiElements.js';
 import { Task } from './task.js';
 import { findElement, clearProjects } from './helpers.js';
 
+const applyOriginalProjects = projectData => {
+  for (const project of projectData) {
+    for (const task of project.tasks) {
+      if (task._originalProjectTitle) {
+        const matchedProject = findElement(task._originalProjectTitle);
+        if (matchedProject) task.originalProject = matchedProject;
+      }
+      delete task._originalProjectTitle;
+    }
+  }
+}
+
 export default {
   save() {
     const { currentElement, appStorage } = global;
@@ -26,6 +38,8 @@ export default {
           description: task.description,
           isImportant: task.isImportant,
           isCompleted: task.isCompleted,
+          completionDate: task.completionDate,
+          deletionDate: task.deletionDate,
           originalProject: task.originalProject ? task.originalProject.title : null
 
         }))
@@ -71,28 +85,25 @@ export default {
         task.id = taskData.id;
         task.isCompleted = taskData.isCompleted;
         task._originalProjectTitle = taskData.originalProject; // It stores originalProject's title for now. Need to link the actual object afterwards.
+        task.completionDate = taskData.completionDate ? new Date(taskData.completionDate) : null;
+        task.deletionDate = taskData.deletionDate ? new Date(taskData.deletionDate) : null;
         return task;
       });
 
       return project;
     });
 
-    for (const project of convertedData) {
-      for (const task of project.tasks) {
-        if (task._originalProjectTitle) {
-          const matchedProject = findElement(task._originalProjectTitle);
-          if (matchedProject) task.originalProject = matchedProject;
-        }
-        delete task._originalProjectTitle;
-      }
-    }
+
 
     result.appData = convertedData;
     return result;
   },
 
   load() {
-    const { currentElement, appData } = this.read();
+    const data = this.read();
+    if (!data) return;
+
+    const { currentElement, appData } = data;
     clearProjects();
 
     for (const project of appData) {
@@ -100,5 +111,6 @@ export default {
     }
 
     global.currentElement = findElement(currentElement);
+    applyOriginalProjects(appData);
   }
 }

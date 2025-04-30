@@ -355,7 +355,11 @@ body {
 
 .main__item.completed {
   --colorComplete: var(--colorTextLight);
-  text-decoration: line-through;
+
+  .main__item-name,
+  .main__item-description {
+    text-decoration: line-through;
+  }
 
   &.main__item--important {
     --colorComplete: var(--colorAccentInactive);

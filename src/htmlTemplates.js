@@ -144,7 +144,7 @@ export default {
     const revertButtonHTML = `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>`;
     let projectDisplayHTML = '';
     if (task.project === findElement('Deleted')) {
-      projectDisplayHTML = ' | ' + task.originalProject.title;
+      projectDisplayHTML = ' | ' + task.originalProject?.title;
     } else if (task.isCompleted && global.currentElement === findElement('Completed')) {
       projectDisplayHTML = ' | ' + task.project.title;
     }
