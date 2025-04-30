@@ -799,18 +799,24 @@ select.popup__input {
     transform: translateX(0);
   }
 
-  .notification__exit {
-    font-size: 1.5em;
-    margin-bottom: .125em;
-    font-weight: normal;
-    color: var(--colorTextOpaque);
-    cursor: pointer;
-    transition: .15s;
+}
 
-    &:hover {
-      color: var(--colorTextDark)
-    }
+.notification__exit {
+  font-size: 1.5em;
+  margin-bottom: .125em;
+  font-weight: normal;
+  color: var(--colorTextOpaque);
+  cursor: pointer;
+  transition: .15s;
+
+  &:hover {
+    color: var(--colorTextDark)
   }
+}
+
+.notification__icon {
+  color: var(--colorTextLight);
+  margin-right: -.25rem;
 }
 
 /* ---------------------------------- UTILS --------------------------------- */

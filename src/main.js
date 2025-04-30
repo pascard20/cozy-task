@@ -37,6 +37,7 @@ const app = (function () {
     } else {
       createNotification(`The title "${name}" is already being used`, 'warning')
       console.warn('Project already exists!');
+      return false;
     }
 
   }
@@ -154,7 +155,7 @@ const app = (function () {
   /* -------------------------------- Handlers -------------------------------- */
 
   const handleNavClick = event => {
-    const projectElement = event.target.closest("li");
+    const projectElement = event.target.closest(".nav__element");
     const elementID = projectElement?.id;
     const clickedSetting = event.target.closest('.nav__item-setting');
     const tempElement = findElement(elementID)
@@ -174,7 +175,7 @@ const app = (function () {
     }
 
     else {
-      global.currentElement = tempElement;
+      if (tempElement) global.currentElement = tempElement;
       refreshApp();
     }
   }
@@ -211,7 +212,6 @@ const app = (function () {
         }
 
         // Revert task
-        console.log(taskClicked);
         const revertButton = taskElement.querySelector('.main__item-revert');
         if (clickedSetting === revertButton) {
           moveTask(taskClicked, taskClicked.originalProject);
@@ -231,12 +231,13 @@ const app = (function () {
   const handleNewProject = async () => {
     const newProject = await handleUserInput(global.popups.newProject, data => {
       return addProject(data.get('title'), global.icons[data.get('project-icon')]);
-    })
+    });
 
     if (newProject) {
       global.currentElement = newProject;
       refreshApp();
     }
+
   }
 
   const handleNewTask = async () => {

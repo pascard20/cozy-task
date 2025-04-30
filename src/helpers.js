@@ -42,13 +42,13 @@ export const addProject = (name, icon, isEditable = true) => {
   } else {
     createNotification(`The title "${name}" is already being used`, 'warning')
     console.warn('Project already exists!');
+    return false;
   }
 
 }
 
 export const addTask = (title, description = null, date = null, isImportant = false, project = findElement('Uncategorized')) => {
   if (project) {
-    console.log(project.addTask)
     const newTask = project.addTask(title, description, date, isImportant);
     refreshApp();
     return newTask;

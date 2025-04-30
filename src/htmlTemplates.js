@@ -192,7 +192,7 @@ export default {
 
   getNavElement(title, icon, taskCounterHTML, navElementSettingsHTML) {
     return `
-      <li class="nav__item" id="${title}">
+      <li class="nav__item nav__element" id="${title}">
         <div class="nav__item-icon">${icon}</div>
         <div class="nav__item-name">${title}</div>
         ${taskCounterHTML}
@@ -201,9 +201,11 @@ export default {
     `;
   },
 
-  getNotification(message) {
+  getNotification(message, type = 'info') {
+    const icon = global.icons[type];
     return `
       <div class="notification">
+        <div class="notification__icon">${icon}</div>
         <div class="notification__content">${message}</div>
         <div class="notification__exit">x</div>
       </div>

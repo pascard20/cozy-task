@@ -30,20 +30,22 @@ const global = {
   },
 
   icons: {
-    folder: `<i class="fa-solid fa-folder"></i>`,
-    trash: `<i class="fa-solid fa-trash"></i>`,
-    day: `<i class="fa-solid fa-calendar-day"></i>`,
-    week: `<i class="fa-solid fa-calendar-week"></i>`,
-    edit: `<i class="fa-solid fa-pen-to-square"></i>`,
-    clock: `<i class="fa-solid fa-clock"></i>`,
-    check: `<i class="fa-solid fa-check"></i>`,
-    globe: `<i class="fa-solid fa-globe"></i>`,
-    people: `<i class="fa-solid fa-people-group"></i>`,
-    house: `<i class="fa-solid fa-house"></i>`,
-    dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
     briefcase: `<i class="fa-solid fa-briefcase"></i>`,
+    check: `<i class="fa-solid fa-check"></i>`,
+    clock: `<i class="fa-solid fa-clock"></i>`,
+    day: `<i class="fa-solid fa-calendar-day"></i>`,
+    dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
+    edit: `<i class="fa-solid fa-pen-to-square"></i>`,
+    folder: `<i class="fa-solid fa-folder"></i>`,
     game: `<i class="fa-solid fa-gamepad"></i>`,
-    revert: `<i class="fa-solid fa-rotate-left"></i>`
+    globe: `<i class="fa-solid fa-globe"></i>`,
+    house: `<i class="fa-solid fa-house"></i>`,
+    info: `<i class="fa-solid fa-circle-info"></i>`,
+    people: `<i class="fa-solid fa-people-group"></i>`,
+    revert: `<i class="fa-solid fa-rotate-left"></i>`,
+    trash: `<i class="fa-solid fa-trash"></i>`,
+    warning: `<i class="fa-solid fa-triangle-exclamation"></i>`,
+    week: `<i class="fa-solid fa-calendar-week"></i>`
   }
 }
 
