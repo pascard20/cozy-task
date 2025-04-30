@@ -34,7 +34,10 @@ const global = {
 
   icons: {
     add: `<i class="fa-solid fa-plus"></i>`,
+    book: `<i class="fa-solid fa-book"></i>`,
     briefcase: `<i class="fa-solid fa-briefcase"></i>`,
+    camera: `<i class="fa-solid fa-camera"></i>`,
+    car: `<i class="fa-solid fa-car"></i>`,
     check: `<i class="fa-solid fa-check"></i>`,
     clock: `<i class="fa-solid fa-clock"></i>`,
     day: `<i class="fa-solid fa-calendar-day"></i>`,
@@ -47,9 +50,11 @@ const global = {
     info: `<i class="fa-solid fa-circle-info"></i>`,
     people: `<i class="fa-solid fa-people-group"></i>`,
     revert: `<i class="fa-solid fa-rotate-left"></i>`,
+    star: `<i class="fa-solid fa-star"></i>`,
     trash: `<i class="fa-solid fa-trash"></i>`,
     warning: `<i class="fa-solid fa-triangle-exclamation"></i>`,
-    week: `<i class="fa-solid fa-calendar-week"></i>`
+    week: `<i class="fa-solid fa-calendar-week"></i>`,
+    world: `<i class="fa-solid fa-earth-americas"></i>`,
   }
 }
 
@@ -62,11 +67,13 @@ Object.defineProperty(global, 'appStorage', {
 
 const projectIconKeys = [
   'folder',
+  'star',
   'people',
   'house',
   'dumbbell',
   'briefcase',
-  'game'
+  'game',
+  'world',
 ]
 
 global.icons.projectChoice = Object.fromEntries(
