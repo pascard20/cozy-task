@@ -142,11 +142,12 @@ export default {
   },
 
   getTask(task) {
+    const hasOriginalProject = findElement(task.originalProject?.title);
     const editButtonHTML = `<div class="main__item-setting main__item-edit">${global.icons.edit}</div>`;
-    const revertButtonHTML = task.originalProject ? `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>` : '';
+    const revertButtonHTML = hasOriginalProject ? `<div class="main__item-setting main__item-revert">${global.icons.revert}</div>` : '';
     let projectDisplayHTML = '';
     if (task.project === findElement('Deleted')) {
-      projectDisplayHTML = task.originalProject ? ' | ' + task.originalProject.title : '';
+      projectDisplayHTML = hasOriginalProject ? ' | ' + task.originalProject.title : '';
     } else if (task.isCompleted && global.currentElement === findElement('Completed')) {
       projectDisplayHTML = ' | ' + task.project.title;
     }
