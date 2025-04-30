@@ -851,14 +851,14 @@ select.popup__input {
   margin-bottom: -1rem;
   flex-grow: 1;
   justify-content: flex-end;
-  color: var(--colorTextOpaque);
+  color: var(--colorTextLight);
 
   .nav__item {
     justify-content: flex-start;
   }
 
   .nav__item-icon {
-    color: var(--colorTextOpaque);
+    color: inherit;
   }
 }
 
@@ -872,6 +872,7 @@ select.popup__input {
   font-size: calc(.75rem + 1px);
   letter-spacing: .01em;
   margin-left: 2rem;
+  color: var(--colorTextOpaque);
 }
 
 .credits__name,
@@ -892,9 +893,10 @@ select.popup__input {
   display: inline-block;
   transform: scale(1);
   margin-right: .5rem;
+  transition: transform .25s;
 
   &:hover {
-    transform: scale(1.25);
+    transform: scale(1.1);
   }
 }
 

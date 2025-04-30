@@ -45,13 +45,30 @@ class PopUp {
     this.attachEventListeners();
   }
 
-  waitForUserInput(defaultValues = {}) {
-    const form = this.DOMElement.querySelector('form');
-    form.reset()
+  formatDateForInput(date) {
+    // Valid Date object
+    if (date instanceof Date && !isNaN(date.getTime())) {
+      return date.toISOString().split('T')[0];
+    }
 
+    // String in YYYY-MM-DD format
+    if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return date;
+    }
+
+    return '';
+  }
+
+  waitForUserInput(defaultValues = {}) {
+    // Reset form
+    const form = this.DOMElement.querySelector('form');
+    form.reset();
+
+    // Set default values
     Object.entries(defaultValues).forEach(([selector, value]) => {
       const inputs = form.querySelectorAll(selector);
       inputs.forEach(input => {
+        if (selector === '#dueDate') value = this.formatDateForInput(value);
         const type = input.type.toLowerCase();
         if (type === 'radio') {
           input.checked = global.icons[input.value] === value;
@@ -63,16 +80,21 @@ class PopUp {
         } else {
           input.value = value;
         }
-      })
-    })
+      });
+    });
 
-    this.DOMElement.showModal();
+    // Ensure dialog is closed
+    if (this.DOMElement.open) {
+      this.DOMElement.close();
+    }
 
-    return new Promise((resolve, reject) => {
-      const cleanup = () => {
-        this.DOMElement.removeEventListener('submit', onSubmit);
-        this.DOMElement.removeEventListener('close', onClose);
-      };
+    return new Promise(resolve => {
+      try {
+        this.DOMElement.showModal();
+      } catch (e) {
+        console.error('Dialog failed to open:', e);
+        return resolve(null);
+      }
 
       const onSubmit = () => {
         cleanup();
@@ -81,9 +103,16 @@ class PopUp {
 
       const onClose = () => {
         cleanup();
-        reject('Popup closed without submitting');
+        resolve(null);
       };
 
+      const cleanup = () => {
+        this.DOMElement.removeEventListener('submit', onSubmit);
+        this.DOMElement.removeEventListener('close', onClose);
+      };
+
+      // Clean up any existing listeners and attach new ones
+      cleanup();
       this.DOMElement.addEventListener('submit', onSubmit, { once: true });
       this.DOMElement.addEventListener('close', onClose, { once: true });
     });

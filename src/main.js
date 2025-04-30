@@ -331,20 +331,24 @@ const app = (function () {
   const handleEditTask = async task => {
     updatePopups();
     const tempProjectTitle = task.project.title;
-    const editedTask = await handleUserInput(global.popups.editTask, data => {
-      return task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
-    }, {
-      '#title': task.title,
-      '#description': task.description,
-      '#dueDate': task.date,
-      '#isImportant': task.isImportant,
-      '#project': task.project.title
-    })
-    if (editedTask) {
-      createNotification('Task edited');
-      if (tempProjectTitle !== task.project.title) createNotification(`Task moved from "${tempProjectTitle}" to "${task.project.title}"`);
-      editedTask.demoContent = false;
-      refreshApp();
+    try {
+      const editedTask = await handleUserInput(global.popups.editTask, data => {
+        return task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
+      }, {
+        '#title': task.title,
+        '#description': task.description,
+        '#dueDate': task.date,
+        '#isImportant': task.isImportant,
+        '#project': task.project.title
+      })
+      if (editedTask) {
+        createNotification('Task edited');
+        if (tempProjectTitle !== task.project.title) createNotification(`Task moved from "${tempProjectTitle}" to "${task.project.title}"`);
+        editedTask.demoContent = false;
+        refreshApp();
+      }
+    } catch (err) {
+      console.warn('Task editing cancelled or failed:', err);
     }
   }
 
@@ -370,12 +374,15 @@ const app = (function () {
   }
 
   const handleUserInput = async (popup, createFunction, defaultValues = {}) => {
-    try {
-      const data = await popup.waitForUserInput(defaultValues);
-      return createFunction(data);
-    } catch (event) {
+    const data = await popup.waitForUserInput(defaultValues);
+
+    // If data is null, it means the dialog was closed without submission
+    if (!data) {
       return false;
     }
+
+    // Otherwise process the data
+    return createFunction(data);
   }
 
   const handleUserConfirmation = async (popup, confirmFunction) => {
