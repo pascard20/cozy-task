@@ -38,9 +38,9 @@ export const updateTaskGroups = () => {
 export const sortProjectTasks = project => {
   project.tasks.sort((a, b) => {
     const bDateInfo = b.getDateInfo();
-    const bDate = bDateInfo.dateObj;
+    const bDate = bDateInfo?.dateObj;
     const aDateInfo = a.getDateInfo();
-    const aDate = aDateInfo.dateObj;
+    const aDate = aDateInfo?.dateObj;
 
     const isDefaultTask = dateInfo => {
       return (!dateInfo.isCompleted && !dateInfo.isDeleted);
@@ -51,12 +51,20 @@ export const sortProjectTasks = project => {
     if (aDate && !bDate) return 1;
 
     // 2. For default tasks compare only date, for others include time as well
-    if (aDate && bDate) {
-      const aDateForSorting = isDefaultTask(aDateInfo) ? new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate()) : new Date(aDateInfo.dateObj);
-      const bDateForSorting = isDefaultTask(bDateInfo) ? new Date(bDate.getFullYear(), bDate.getMonth(), bDate.getDate()) : new Date(bDateInfo.dateObj);
+    try {
+      const aDateForSorting = isDefaultTask(aDateInfo) ?
+        new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate()) :
+        new Date(aDateInfo.dateObj);
+
+      const bDateForSorting = isDefaultTask(bDateInfo) ?
+        new Date(bDate.getFullYear(), bDate.getMonth(), bDate.getDate()) :
+        new Date(bDateInfo.dateObj);
 
       const dateDiff = aDateForSorting - bDateForSorting;
       if (dateDiff !== 0) return dateDiff; // If dates are different, return the difference
+    } catch (e) {
+      console.warn("Error comparing dates:", e, { aDate, bDate });
+      // If date comparison fails, treat them as equal and move to next criteria
     }
 
     // 3. If dates are the same (or both null), compare by importance

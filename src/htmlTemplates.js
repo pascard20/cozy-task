@@ -13,7 +13,7 @@ const getIconSelector = (value, iconHTML) => {
 const popUpProjectForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
-      <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
+      <input class="popup__input" type="text" id="title" name="title" placeholder="" maxlength="20" required >
       <label for="title"><span>Title</span></label>
     </div>
     <div class="popup__input-icon popup__input-area">
@@ -174,7 +174,7 @@ export default {
 
   getMainHeader(title, counterHTML) {
     return `
-      <h1 class="main__title">${title}</h1>
+      <h1 class="main__title ellipsis">${title}</h1>
       ${counterHTML}
       <div class="main__add-task">+ New task</div>
     `;
@@ -197,7 +197,7 @@ export default {
     return `
       <li class="nav__item nav__element" id="${title}">
         <div class="nav__item-icon">${icon}</div>
-        <div class="nav__item-name">${title}</div>
+        <div class="nav__item-name ellipsis">${title}</div>
         ${taskCounterHTML}
         ${navElementSettingsHTML}
       </li>
