@@ -41,7 +41,7 @@ export default {
           isCompleted: task.isCompleted,
           completionDate: task.completionDate,
           deletionDate: task.deletionDate,
-          originalProject: task.originalProject ? task.originalProject.title : null,
+          originalProjectTitle: task.originalProject ? task.originalProject.title : null,
           demoContent: task.demoContent ? true : false
         }))
       })
@@ -86,7 +86,7 @@ export default {
         );
         task.id = taskData.id;
         task.isCompleted = taskData.isCompleted;
-        task._originalProjectTitle = taskData.originalProject; // It stores originalProject's title for now. Need to link the actual object afterwards.
+        task._originalProjectTitle = taskData.originalProjectTitle; // It stores originalProject's title for now. Need to link the actual object afterwards.
         task.completionDate = taskData.completionDate ? new Date(taskData.completionDate) : null;
         task.deletionDate = taskData.deletionDate ? new Date(taskData.deletionDate) : null;
         task.demoContent = taskData.demoContent;

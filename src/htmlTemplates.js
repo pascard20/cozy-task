@@ -13,8 +13,8 @@ const getIconSelector = (value, iconHTML) => {
 const popUpProjectForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
-      <input class="popup__input" type="text" id="title" name="title" placeholder="" maxlength="28" required >
-      <label for="title"><span>Title</span></label>
+      <input class="popup__input" type="text" id="mainTitle" name="mainTitle" placeholder="" maxlength="28" required >
+      <label for="mainTitle"><span>Title</span></label>
     </div>
     <div class="popup__input-icon popup__input-area">
       <p><span>Icon</span></p>
@@ -63,8 +63,8 @@ const popUpProjectForm = `
 const popUpTaskForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
-      <input class="popup__input" type="text" id="title" name="title" placeholder="" required>
-      <label for="title"><span>Title</span></label>
+      <input class="popup__input" type="text" id="mainTitle" name="mainTitle" placeholder="" required>
+      <label for="mainTitle"><span>Title</span></label>
     </div>
 
     <div class="popup__input-description popup__input-area">

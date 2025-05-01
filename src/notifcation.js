@@ -1,5 +1,7 @@
 import templates from "./htmlTemplates";
 import global from "./globals";
+import DOMPurify from 'dompurify';
+import { sanitize } from "./utils";
 
 const parent = global.elem.notifications;
 
@@ -13,7 +15,8 @@ class Notification {
   }
 
   returnHTML() {
-    return templates.getNotification(this.message, this.type);
+    const baseHTML = templates.getNotification(this.message, this.type);
+    return sanitize(baseHTML);
   }
 
   timeout() {

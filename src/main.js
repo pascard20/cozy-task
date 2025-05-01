@@ -11,6 +11,7 @@ import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
 import { hideNavBar, findElement, moveTask, updateTaskGroups, sortProjectTasks } from './helpers.js';
 import appStorage from './appStorage.js';
+import DOMPurify from 'dompurify'
 
 const app = (function () {
 
@@ -232,9 +233,18 @@ const app = (function () {
 
   const handleNavClick = event => {
     const projectElement = event.target.closest(".nav__element");
+    console.log("Found project element:", projectElement);
+
     const elementID = projectElement?.id;
+    console.log("Element ID:", elementID);
+
+    const tempElement = findElement(elementID);
+    console.log("Found element object:", tempElement);
+
+    // const projectElement = event.target.closest(".nav__element");
+    // const elementID = projectElement?.id;
     const clickedSetting = event.target.closest('.nav__item-setting');
-    const tempElement = findElement(elementID)
+    // const tempElement = findElement(elementID)
 
     if (clickedSetting) {
       const editButton = projectElement.querySelector('.nav__item-edit');
@@ -311,7 +321,7 @@ const app = (function () {
 
   const handleNewProject = async () => {
     const newProject = await handleUserInput(global.popups.newProject, data => {
-      return addProject(data.get('title'), global.icons[data.get('project-icon')]);
+      return addProject(data.get('mainTitle'), global.icons[data.get('project-icon')]);
     });
 
     if (newProject) {
@@ -326,7 +336,7 @@ const app = (function () {
   const handleNewTask = async () => {
     updatePopups();
     const newTask = await handleUserInput(global.popups.newTask, data => {
-      return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
+      return addTask(data.get('mainTitle'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
     }, { '#project': global.currentElement?.title })
     if (newTask) createNotification(`Task added to "${newTask.project.title}"`);
     refreshApp();
@@ -337,9 +347,9 @@ const app = (function () {
     const tempProjectTitle = task.project.title;
     try {
       const editedTask = await handleUserInput(global.popups.editTask, data => {
-        return task.update(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
+        return task.update(data.get('mainTitle'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
       }, {
-        '#title': task.title,
+        '#mainTitle': task.title,
         '#description': task.description,
         '#dueDate': task.date,
         '#isImportant': task.isImportant,
@@ -357,16 +367,24 @@ const app = (function () {
   }
 
   const handleEditProject = async project => {
+    console.log("Project being edited:", project);
+    if (!project) {
+      console.error("Project is undefined in handleEditProject!");
+      return;
+    }
+
     const tempProjectTitle = project.title;
+    console.log("Project title:", tempProjectTitle);
+
     const editedProject = await handleUserInput(global.popups.editProject, data => {
-      if (!findElement(data.get('title')) || data.get('title') === tempProjectTitle) {
-        return project.update(data.get('title'), global.icons[data.get('project-icon')]);
+      if (!findElement(data.get('mainTitle')) || data.get('mainTitle') === tempProjectTitle) {
+        return project.update(data.get('mainTitle'), global.icons[data.get('project-icon')]);
       } else {
-        createNotification(`The title "${data.get('title')}" is already being used`, 'warning')
+        createNotification(`The title "${data.get('mainTitle')}" is already being used`, 'warning')
         console.warn('This project/task group already exists!')
       };
     }, {
-      '#title': project.title,
+      '#mainTitle': project.title,
       '.icon__radio': project.icon
     })
     if (editedProject) {

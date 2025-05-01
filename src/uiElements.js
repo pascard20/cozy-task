@@ -2,6 +2,7 @@ import templates from './htmlTemplates.js';
 import global from './globals.js';
 import { Task } from './task.js';
 import { findElement } from './helpers.js';
+import { sanitize, escapeHTML } from './utils.js';
 
 class Counter {
   returnCounterHTML(htmlClass, isEditable, importantTasksCount, defaultTasksCount) {
@@ -21,23 +22,24 @@ export class MainHeader extends Counter {
   }
 
   returnHTML(currentElement) {
-    return currentElement ? templates.getMainHeader(currentElement.title, this.returnCounterHTML(currentElement)) : '';
+    const baseHTML = currentElement ? templates.getMainHeader(currentElement.title, this.returnCounterHTML(currentElement)) : '';
+    return sanitize(baseHTML);
   }
 }
 
 export class NavElement extends Counter {
   constructor(title, icon, isCounting = true, isEditable = true, tasks = []) {
     super();
-    this.title = title;
-    this.icon = icon;
+    this.title = escapeHTML(title);
+    this.icon = sanitize(icon);
     this.isCounting = isCounting;
     this.tasks = tasks;
     this.isEditable = isEditable;
   }
 
   update(title = null, icon = null) {
-    if (title) this.title = title;
-    if (icon) this.icon = icon;
+    if (title) this.title = escapeHTML(title);
+    if (icon) this.icon = sanitize(icon);
     return this;
   }
 
@@ -92,7 +94,8 @@ export class NavElement extends Counter {
   }
 
   returnHTML() {
-    return templates.getNavElement(this.title, this.icon, this.returnCounterHTML(), this.returnSettingsHTML());
+    const baseHTML = templates.getNavElement(this.title, this.icon, this.returnCounterHTML(), this.returnSettingsHTML());
+    return sanitize(baseHTML);
   }
 }
 

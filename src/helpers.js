@@ -1,5 +1,6 @@
 import global from "./globals.js";
 import { createNotification } from './notifcation.js';
+import { escapeHTML } from "./utils.js";
 
 export const returnAllTasks = () => {
   const tasks = [];
@@ -18,7 +19,8 @@ export const findElement = elementID => {
     ...global.taskGroups,
     [global.deleted.title]: global.deleted
   }
-  return lookup[elementID];
+  console.log(lookup);
+  return lookup[escapeHTML(elementID)];
 }
 
 export const updateTaskGroups = () => {
@@ -63,7 +65,7 @@ export const sortProjectTasks = project => {
       const dateDiff = aDateForSorting - bDateForSorting;
       if (dateDiff !== 0) return dateDiff; // If dates are different, return the difference
     } catch (e) {
-      console.warn("Error comparing dates:", e, { aDate, bDate });
+      // console.warn("Error comparing dates:", e, { aDate, bDate });
       // If date comparison fails, treat them as equal and move to next criteria
     }
 

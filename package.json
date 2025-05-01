@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "date-fns": "^4.1.0",
+    "dompurify": "^3.2.5",
     "simplebar": "^6.3.0"
   }
 }

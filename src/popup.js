@@ -1,5 +1,7 @@
 import templates from './htmlTemplates.js';
 import global from "./globals.js";
+import DOMPurify from 'dompurify';
+import { sanitize } from './utils.js';
 
 class PopUp {
   constructor(name, headerContent) {
@@ -24,7 +26,8 @@ class PopUp {
   }
 
   returnHTML(popUpType, popUpClass = null) {
-    return templates.getPopUp(popUpType, popUpClass, this.headerContent, this.name);
+    const baseHTML = templates.getPopUp(popUpType, popUpClass, this.headerContent, this.name);
+    return sanitize(baseHTML);
   }
 
   createDOMElement() {

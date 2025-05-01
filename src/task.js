@@ -1,15 +1,16 @@
 import templates from './htmlTemplates.js';
 import { differenceInCalendarDays, format } from 'date-fns';
-import { generateID } from './utils.js';
+import { generateID, sanitize } from './utils.js';
 import global from './globals.js';
 import { formatDistanceToNow } from 'date-fns';
 import { findElement } from './helpers.js';
+import { escapeHTML } from './utils.js';
 
 export class Task {
   constructor(title, description = null, date = null, isImportant = false) {
     this.id = generateID();
-    this.title = title;
-    this.description = description;
+    this.title = escapeHTML(title);
+    this.description = escapeHTML(description);
     this.date = date;
     this.completionDate = null;
     this.deletionDate = null;
@@ -25,9 +26,9 @@ export class Task {
   }
 
   update(title, description = null, date = null, isImportant = false, project) {
-    this.title = title;
-    if (description) this.description = description;
-    if (date) this.date = date;
+    this.title = escapeHTML(title);
+    if (description) this.description = escapeHTML(description);
+    if (date) this.date = escapeHTML(date);
     this.isImportant = isImportant;
     this.changeProject(project);
     return this;
@@ -87,25 +88,9 @@ export class Task {
     return `${prefix}${dateStr}${isPending ? " – " + label : ""}`
   }
 
-  // formatDueDate() {
-  //   switch (this.getDaysLeft()) {
-  //     case null:
-  //       return '';
-  //     case this.getDaysLeft() < -1:
-  //       return 'Long ago';
-  //     case -1:
-  //       return 'Yesterday';
-  //     case 0:
-  //       return 'Today';
-  //     case 1:
-  //       return 'Tomorrow';
-  //     default:
-  //       return format(this.date, 'PPP');
-  //   }
-  // }
-
   returnHTML() {
-    return templates.getTask(this);
+    const baseHTML = templates.getTask(this);
+    return sanitize(baseHTML);
   }
 
   getDaysLeft(date = this.date) {
