@@ -9,15 +9,17 @@ export const generateID = () => {
 }
 
 export const escapeHTML = baseText => {
+  if (typeof baseText !== 'string') {
+    return baseText;
+  }
+
   return baseText
-    ?.replace(/</g, "&lt;")
+    .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
+};
 
 export const sanitize = baseHTML => {
-  return DOMPurify.sanitize(baseHTML, {
-    ALLOWED_ATTR: ['id', 'class', 'type', 'name', 'placeholder', 'required', 'for', 'value', 'autocomplete']
-  })
+  return DOMPurify.sanitize(baseHTML);
 }

@@ -19,7 +19,6 @@ export const findElement = elementID => {
     ...global.taskGroups,
     [global.deleted.title]: global.deleted
   }
-  console.log(lookup);
   return lookup[escapeHTML(elementID)];
 }
 
@@ -38,11 +37,17 @@ export const updateTaskGroups = () => {
 }
 
 export const sortProjectTasks = project => {
+  if (!project || !project.tasks || !Array.isArray(project.tasks)) {
+    console.warn("Cannot sort tasks: project or tasks array is invalid", project);
+    return project; // Return the original project without sorting
+  }
+
   project.tasks.sort((a, b) => {
-    const bDateInfo = b.getDateInfo();
-    const bDate = bDateInfo?.dateObj;
     const aDateInfo = a.getDateInfo();
+    const bDateInfo = b.getDateInfo();
+
     const aDate = aDateInfo?.dateObj;
+    const bDate = bDateInfo?.dateObj;
 
     const isDefaultTask = dateInfo => {
       return (!dateInfo.isCompleted && !dateInfo.isDeleted);
@@ -54,19 +59,21 @@ export const sortProjectTasks = project => {
 
     // 2. For default tasks compare only date, for others include time as well
     try {
-      const aDateForSorting = isDefaultTask(aDateInfo) ?
-        new Date(aDate.getFullYear(), aDate.getMonth(), aDate.getDate()) :
-        new Date(aDateInfo.dateObj);
+      const aDateObj = parseDateSafely(aDate);
+      const bDateObj = parseDateSafely(bDate);
 
-      const bDateForSorting = isDefaultTask(bDateInfo) ?
-        new Date(bDate.getFullYear(), bDate.getMonth(), bDate.getDate()) :
-        new Date(bDateInfo.dateObj);
+      const aDateForSorting = isDefaultTask(aDateInfo)
+        ? new Date(aDateObj.getFullYear(), aDateObj.getMonth(), aDateObj.getDate())
+        : aDateObj;
+
+      const bDateForSorting = isDefaultTask(bDateInfo)
+        ? new Date(bDateObj.getFullYear(), bDateObj.getMonth(), bDateObj.getDate())
+        : bDateObj;
 
       const dateDiff = aDateForSorting - bDateForSorting;
-      if (dateDiff !== 0) return dateDiff; // If dates are different, return the difference
+      if (dateDiff !== 0) return dateDiff;
     } catch (e) {
-      // console.warn("Error comparing dates:", e, { aDate, bDate });
-      // If date comparison fails, treat them as equal and move to next criteria
+      console.warn("Error comparing dates:", e, { aDate, bDate });
     }
 
     // 3. If dates are the same (or both null), compare by importance
@@ -75,9 +82,35 @@ export const sortProjectTasks = project => {
     }
 
     // 4. If both have the same importance, sort by title
-    return a.title.localeCompare(b.title);
+    return (a.title || "").localeCompare(b.title || "");
   });
+
+  return project;
 };
+
+function parseDateSafely(date) {
+  if (!date) return null;
+
+  if (date instanceof Date) return date;
+
+  try {
+    // Handle string date in simple format (YYYY-MM-DD)
+    if (typeof date === 'string') {
+      if (date.length === 10 && date.includes('-')) {
+        const [year, month, day] = date.split('-').map(num => parseInt(num, 10));
+        return new Date(year, month - 1, day); // month is 0-indexed in JS Date
+      }
+      // Handle ISO string format
+      return new Date(date);
+    }
+
+    // Handle any other format - number, etc.
+    return new Date(date);
+  } catch (e) {
+    console.warn("Failed to parse date:", date);
+    return null;
+  }
+}
 
 export const moveTask = (task, destination) => {
   task.update(

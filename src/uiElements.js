@@ -16,7 +16,9 @@ export class MainHeader extends Counter {
     let importantTaskCount = 0;
 
     const isCounterHidden = currentElement === global.deleted || currentElement === findElement('Completed');
-    if (!isCounterHidden) ({ defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks());
+    if (!isCounterHidden && currentElement && typeof currentElement.countPendingTasks === 'function') {
+      ({ defaultTaskCount, importantTaskCount } = currentElement.countPendingTasks());
+    }
 
     return super.returnCounterHTML('main__count', false, importantTaskCount, defaultTaskCount);
   }
@@ -80,7 +82,9 @@ export class NavElement extends Counter {
   }
 
   returnCounterHTML() {
-    const { defaultTaskCount, importantTaskCount } = this.countPendingTasks();
+    if (typeof this?.countPendingTasks !== 'function') return false;
+
+    const { defaultTaskCount, importantTaskCount } = this?.countPendingTasks();
     return this.isCounting ? super.returnCounterHTML(
       'nav__count',
       this.isEditable,

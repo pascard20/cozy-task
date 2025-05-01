@@ -49,6 +49,7 @@ const app = (function () {
     for (let i = 0; i < taskCount; i++) {
       const isImportant = Math.random() < 1 / 6;
 
+      // Generate date
       const hasDate = Math.random() < 6 / 7;
       let randomDate;
       if (hasDate) {
@@ -56,8 +57,8 @@ const app = (function () {
         randomDate = addDays(new Date(), randomOffset);
       } else randomDate = null;
 
+      // Decide whether it's completed and generate completion date if it is
       let randomCompletionDate, randomDeletionDate;
-
       const isCompleted = Math.random() < 1 / 5;
       if (isCompleted) {
         const randomCompletionOffset = Math.floor(Math.random() * 10) - 10;
@@ -68,6 +69,7 @@ const app = (function () {
         randomCompletionDate.setHours(randomHour, randomMinutes, randomSeconds);
       }
 
+      // Decide whether it's deleted and generate deletion date if it is
       if (project === findElement('Deleted')) {
         const randomDeletionOffset = Math.floor(Math.random() * 10) - 10;
         const randomHour = Math.floor(Math.random() * 24);
@@ -77,10 +79,12 @@ const app = (function () {
         randomDeletionDate.setHours(randomHour, randomMinutes, randomSeconds);
       }
 
+      // Generate title
       const titleLength = Math.floor(Math.random() * 3) + 2;
       const titleIndex = Math.floor(Math.random() * loremIpsumSplit.length);
 
-      const haveDescription = Math.random() < 7 / 8;
+      // Decide wheter it has a description and generate it if it has
+      const haveDescription = Math.random() < 1 / 2;
       const descriptionLength = haveDescription ? Math.floor(Math.random() * 10) + 10 : 0;
       const descriptionIndex = Math.floor(Math.random() * loremIpsumSplit.length);
 
@@ -89,7 +93,6 @@ const app = (function () {
       const taskDescription = capitalizeString(lorem.slice(descriptionIndex, descriptionIndex + descriptionLength).join(' '));
 
       const originalProject = project === findElement('Deleted') ? global.projects[Math.floor(Math.random() * global.projects.length)] : null;
-      console.log({ project, originalProject })
       const newTask = addTask(
         taskTitle,
         taskDescription,
@@ -188,7 +191,7 @@ const app = (function () {
       global.elem.mainHeader.innerHTML = mainHeader.returnHTML(global.currentElement);
       global.elem.mainTasks.innerHTML = '';
       if (global.currentElement) {
-        global.currentElement.tasks.forEach(task => {
+        global.currentElement.tasks?.forEach(task => {
           global.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
@@ -200,7 +203,8 @@ const app = (function () {
     updateTaskGroups();
 
     printElements(global.elem.navGroups, [...Object.values(global.taskGroups), global.deleted]);
-    printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
+    printElements(global.elem.navProjects, global.projects);
+    // printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
 
     global.elem.btnNewProject?.addEventListener('click', handleNewProject);
   }
@@ -233,18 +237,9 @@ const app = (function () {
 
   const handleNavClick = event => {
     const projectElement = event.target.closest(".nav__element");
-    console.log("Found project element:", projectElement);
-
     const elementID = projectElement?.id;
-    console.log("Element ID:", elementID);
-
-    const tempElement = findElement(elementID);
-    console.log("Found element object:", tempElement);
-
-    // const projectElement = event.target.closest(".nav__element");
-    // const elementID = projectElement?.id;
     const clickedSetting = event.target.closest('.nav__item-setting');
-    // const tempElement = findElement(elementID)
+    const tempElement = findElement(elementID);
 
     if (clickedSetting) {
       const editButton = projectElement.querySelector('.nav__item-edit');
@@ -367,14 +362,7 @@ const app = (function () {
   }
 
   const handleEditProject = async project => {
-    console.log("Project being edited:", project);
-    if (!project) {
-      console.error("Project is undefined in handleEditProject!");
-      return;
-    }
-
     const tempProjectTitle = project.title;
-    console.log("Project title:", tempProjectTitle);
 
     const editedProject = await handleUserInput(global.popups.editProject, data => {
       if (!findElement(data.get('mainTitle')) || data.get('mainTitle') === tempProjectTitle) {
@@ -461,7 +449,6 @@ const app = (function () {
   appStorage.load();
   if (!global.deleted || Object.keys(global.deleted).length === 0) global.deleted = new Project('Deleted', global.icons.trash, false, false);
   if (!findElement('Uncategorized')) addProject('Uncategorized', global.icons.folder, false);
-  // console.log(appStorage.read());
 
   /* ---------------------------- Initialize popups --------------------------- */
 
