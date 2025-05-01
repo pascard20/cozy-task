@@ -328,7 +328,7 @@ const app = (function () {
     const newTask = await handleUserInput(global.popups.newTask, data => {
       return addTask(data.get('title'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')));
     }, { '#project': global.currentElement?.title })
-    if (newTask) createNotification('Task created');
+    if (newTask) createNotification(`Task added to "${newTask.project.title}"`);
     refreshApp();
   }
 
@@ -480,6 +480,9 @@ const app = (function () {
   }, { once: true });
   global.elem.demoDeleteButton.addEventListener('click', deleteDemoContent);
   global.elem.hamburgerButton.addEventListener('click', handleHamburgerClick);
+  global.elem.navBackdrop.addEventListener('click', () => {
+    global.elem.nav.classList.remove('open');
+  })
 
   /* ------------------------------ Initialize UI ----------------------------- */
 

@@ -23,6 +23,7 @@ const global = {
     demoAddButton: document.querySelector('.demo-add'),
     demoDeleteButton: document.querySelector('.demo-delete'),
     hamburgerButton: document.querySelector('.hamburger-button'),
+    navBackdrop: document.querySelector('.nav-backdrop'),
 
     get btnNewTask() {
       return document.querySelector('.main__add-task');
@@ -75,6 +76,7 @@ const projectIconKeys = [
   'dumbbell',
   'briefcase',
   'game',
+  'book',
   'world',
 ]
 

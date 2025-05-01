@@ -13,7 +13,7 @@ const getIconSelector = (value, iconHTML) => {
 const popUpProjectForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">
-      <input class="popup__input" type="text" id="title" name="title" placeholder="" maxlength="20" required >
+      <input class="popup__input" type="text" id="title" name="title" placeholder="" maxlength="28" required >
       <label for="title"><span>Title</span></label>
     </div>
     <div class="popup__input-icon popup__input-area">
@@ -154,7 +154,7 @@ export default {
     return `
       <li data-index="${task.id}" class="main__item${task.isImportant ? ' main__item--important' : ''}${task.isCompleted ? ' completed' : ''}">
         <div class="main__item-checkbox"></div>
-        <div class="main__item-duedate">${task.formatDueDate()}${projectDisplayHTML}</div>
+        <div class="main__item-duedate ellipsis">${task.formatDueDate()}${projectDisplayHTML}</div>
         <div class="main__item-name">${task.title}</div>
         <div class="main__item-description">${task.description}</div>
         ${global.currentElement.title === 'Deleted' ? revertButtonHTML : editButtonHTML}
