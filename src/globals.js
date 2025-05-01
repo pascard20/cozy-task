@@ -1,4 +1,8 @@
+const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius que obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem que ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
+
 const global = {
+
+  loremIpsumSplit: loremIpsum.split(' '),
 
   projects: [],
 
@@ -14,8 +18,6 @@ const global = {
     nav: document.querySelector('.nav'),
     navGroups: document.querySelector('.nav__groups'),
     navProjects: document.querySelector('.nav__projects'),
-    // navProjectsWrapper: document.querySelector('.nav__projects-wrapper'),
-    // navGroupsWrapper: document.querySelector('.nav__groups-wrapper'),
     navSectionsWrapper: document.querySelector('.nav__sections-wrapper'),
     mainHeader: document.querySelector('.main__header'),
     mainTasks: document.querySelector('.main__tasks'),

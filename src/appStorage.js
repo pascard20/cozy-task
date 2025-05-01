@@ -22,7 +22,7 @@ export default {
     const currentTitle = currentElement?.title || '';
     localStorage.setItem('currentElementTitle', JSON.stringify(currentTitle));
 
-    if (!Array.isArray(appStorage) || appStorage.length === 0) return; // Check whether appStorage is a non-empty array
+    if (!Array.isArray(appStorage) || appStorage.length === 0) return;
 
     const plainData = appStorage
       .filter(project => project && Object.keys(project).length > 0)
@@ -86,7 +86,7 @@ export default {
         );
         task.id = taskData.id;
         task.isCompleted = taskData.isCompleted;
-        task._originalProjectTitle = taskData.originalProjectTitle; // It stores originalProject's title for now. Need to link the actual object afterwards.
+        task._originalProjectTitle = taskData.originalProjectTitle;
         task.completionDate = taskData.completionDate ? new Date(taskData.completionDate) : null;
         task.deletionDate = taskData.deletionDate ? new Date(taskData.deletionDate) : null;
         task.demoContent = taskData.demoContent;
@@ -95,8 +95,6 @@ export default {
 
       return project;
     });
-
-
 
     result.appData = convertedData;
     return result;

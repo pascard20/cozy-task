@@ -116,14 +116,6 @@ body {
   flex-direction: column;
 }
 
-/* .nav__projects-wrapper,
-.nav__groups-wrapper {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: fit-content;
-  min-height: 7.5rem;
-} */
-
 .nav__sections-wrapper {
   overflow-y: auto;
   overflow-x: hidden;
@@ -138,7 +130,6 @@ body {
 }
 
 .nav__groups {
-  /* margin-top: -.25rem; */
   margin-bottom: 1rem;
 }
 
@@ -994,9 +985,6 @@ select.popup__input {
 
 /* -------------------------------- SIMPLEBAR ------------------------------- */
 
-/* .nav__projects-wrapper,
-.nav__groups-wrapper { */
-
 .nav__sections-wrapper {
 
   /* Scrollbar track */
@@ -1045,9 +1033,6 @@ select.popup__input {
   margin-right: 1.125rem;
 }
 
-/* .nav:has(.nav__projects-wrapper.simplebar-scrollable-y) .nav__add-project {
-  margin-right: .875rem;
-} */
 .nav:has(.nav__sections-wrapper.simplebar-scrollable-y) .nav__add-project {
   margin-right: .875rem;
 }
@@ -1154,6 +1139,10 @@ select.popup__input {
 @media (max-width: 1399px) {
   .main__wrapper {
     margin-right: 0vw;
+  }
+
+  .main {
+    margin-top: -1.25rem;
   }
 
   .nav__section-title {

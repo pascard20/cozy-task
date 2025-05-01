@@ -1,5 +1,4 @@
 import global from "./globals.js";
-import { createNotification } from './notifcation.js';
 import { escapeHTML } from "./utils.js";
 
 export const returnAllTasks = () => {
@@ -39,7 +38,7 @@ export const updateTaskGroups = () => {
 export const sortProjectTasks = project => {
   if (!project || !project.tasks || !Array.isArray(project.tasks)) {
     console.warn("Cannot sort tasks: project or tasks array is invalid", project);
-    return project; // Return the original project without sorting
+    return project;
   }
 
   project.tasks.sort((a, b) => {
@@ -98,13 +97,13 @@ function parseDateSafely(date) {
     if (typeof date === 'string') {
       if (date.length === 10 && date.includes('-')) {
         const [year, month, day] = date.split('-').map(num => parseInt(num, 10));
-        return new Date(year, month - 1, day); // month is 0-indexed in JS Date
+        return new Date(year, month - 1, day);
       }
       // Handle ISO string format
       return new Date(date);
     }
 
-    // Handle any other format - number, etc.
+    // Handle any other format
     return new Date(date);
   } catch (e) {
     console.warn("Failed to parse date:", date);

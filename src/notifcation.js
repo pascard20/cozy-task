@@ -1,12 +1,11 @@
 import templates from "./htmlTemplates";
 import global from "./globals";
-import DOMPurify from 'dompurify';
 import { sanitize } from "./utils";
 
 const parent = global.elem.notifications;
 
 class Notification {
-  constructor(message, type = 'info', duration = 5000) {
+  constructor(message, type = 'info', duration = 6000) {
     this.message = message;
     this.type = type;
     this.duration = duration;

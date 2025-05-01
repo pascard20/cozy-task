@@ -25,41 +25,6 @@ const popUpProjectForm = `
     <button class="popup__btn btn" type="submit">Save project</button>
   </form>`;
 
-/* <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" checked />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label>
-
-        <label class="icon-selector">
-          <input type="radio" class="icon__radio" name="project-icon" value="folder" />
-          <i class="fa-solid fa-folder"></i>
-        </label> */
-
 const popUpTaskForm = `
   <form action="#" class="popup__form" autocomplete="off">
     <div class="popup__input-title popup__input-area">

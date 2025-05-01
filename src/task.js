@@ -67,26 +67,6 @@ export class Task {
     return { dateObj, isCompleted, isDeleted };
   }
 
-  // formatDueDate() {
-
-  //   const { dateObj, isCompleted, isDeleted } = this.getDateInfo();
-  //   if (!dateObj) return '';
-
-  //   const isPending = (!isDeleted && !isCompleted);
-  //   const formatString = isPending ? "PPP" : "MMMM do, yyyy 'at' HH:mm";
-  //   const dateStr = format(dateObj, formatString);
-  //   const daysLeft = this.getDaysLeft(dateObj);
-
-  //   let label = '';
-  //   if (daysLeft === -1) label = 'Yesterday';
-  //   else if (daysLeft === 0) label = 'Today';
-  //   else if (daysLeft === 1) label = 'Tomorrow';
-  //   else label = formatDistanceToNow(dateObj, { addSuffix: true });
-
-  //   const prefix = isDeleted ? 'Deleted on ' : isCompleted ? 'Completed on ' : '';
-  //   return `${prefix}${dateStr}${isPending ? " – " + label : ""}`
-  // }
-
   formatDueDate() {
     const { dateObj, isCompleted, isDeleted } = this.getDateInfo();
     if (!dateObj) return '';

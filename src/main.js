@@ -5,15 +5,13 @@ import './style.css';
 import { addDays } from 'date-fns';
 import { capitalizeString } from './utils.js';
 import global from './globals.js';
-import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
 import { hideNavBar, findElement, moveTask, updateTaskGroups, sortProjectTasks } from './helpers.js';
 import appStorage from './appStorage.js';
-import DOMPurify from 'dompurify'
 
-const app = (function () {
+(function () {
 
   global.elem.allNavSection.forEach(section => {
     section.classList.remove('loaded');
@@ -42,7 +40,7 @@ const app = (function () {
     } else console.warn('This project does not exist!');
   }
 
-  /* ------------------------------ Test content ------------------------------ */
+  /* ------------------------- Test content generation ------------------------ */
 
   const generateRandomTasks = (project = findElement('Uncategorized')) => {
     const taskCount = Math.floor(Math.random() * 3) + 2;
@@ -57,7 +55,7 @@ const app = (function () {
         randomDate = addDays(new Date(), randomOffset);
       } else randomDate = null;
 
-      // Decide whether it's completed and generate completion date if it is
+      // Decide whether the task is completed and generate completion date, if it is
       let randomCompletionDate, randomDeletionDate;
       const isCompleted = Math.random() < 1 / 5;
       if (isCompleted) {
@@ -69,7 +67,7 @@ const app = (function () {
         randomCompletionDate.setHours(randomHour, randomMinutes, randomSeconds);
       }
 
-      // Decide whether it's deleted and generate deletion date if it is
+      // Decide whether the task is deleted and generate deletion date, if it is
       if (project === findElement('Deleted')) {
         const randomDeletionOffset = Math.floor(Math.random() * 10) - 10;
         const randomHour = Math.floor(Math.random() * 24);
@@ -81,14 +79,14 @@ const app = (function () {
 
       // Generate title
       const titleLength = Math.floor(Math.random() * 3) + 2;
-      const titleIndex = Math.floor(Math.random() * loremIpsumSplit.length);
+      const titleIndex = Math.floor(Math.random() * global.loremIpsumSplit.length);
 
-      // Decide wheter it has a description and generate it if it has
+      // Decide wheter the task has a description and generate it, if it has
       const haveDescription = Math.random() < 1 / 2;
       const descriptionLength = haveDescription ? Math.floor(Math.random() * 10) + 10 : 0;
-      const descriptionIndex = Math.floor(Math.random() * loremIpsumSplit.length);
+      const descriptionIndex = Math.floor(Math.random() * global.loremIpsumSplit.length);
 
-      const lorem = [...loremIpsumSplit, ...loremIpsumSplit];
+      const lorem = [...global.loremIpsumSplit, ...global.loremIpsumSplit];
       const taskTitle = capitalizeString(lorem.slice(titleIndex, titleIndex + titleLength).join(' '));
       const taskDescription = capitalizeString(lorem.slice(descriptionIndex, descriptionIndex + descriptionLength).join(' '));
 
@@ -204,7 +202,6 @@ const app = (function () {
 
     printElements(global.elem.navGroups, [...Object.values(global.taskGroups), global.deleted]);
     printElements(global.elem.navProjects, global.projects);
-    // printElements(global.elem.navProjects, global.projects, templates.getNewProjectButton());
 
     global.elem.btnNewProject?.addEventListener('click', handleNewProject);
   }
@@ -325,7 +322,6 @@ const app = (function () {
       createNotification(`Project "${newProject.title}" created`);
       refreshApp();
     }
-
   }
 
   const handleNewTask = async () => {
@@ -390,8 +386,6 @@ const app = (function () {
     if (!data) {
       return false;
     }
-
-    // Otherwise process the data
     return createFunction(data);
   }
 
@@ -431,6 +425,7 @@ const app = (function () {
   }
 
   /* ------------------------- Initialize task groups ------------------------- */
+
   global.taskGroups = {
     All: new TaskGroup('All', global.icons.globe, task => !task.isCompleted),
     Today: new TaskGroup('Today', global.icons.day, task => {
@@ -466,12 +461,8 @@ const app = (function () {
     popup.initializeDOMElement();
   })
 
-  /* -------------------------- Generate test content ------------------------- */
+  /* -------------------------- Vital initializations ------------------------- */
 
-  const loremIpsum = `Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius que obcaecati sequi iusto vitae eveniet distinctio id voluptas officia quod odit voluptatem earum. Aliquid explicabo ipsa odio maiores. Tempore autem dolorem aspernatur officiis omnis distinctio quam aperiam. Quas eligendi id iure. Ipsa dolore qui modi ad nobis natus possimus soluta expedita accusantium non nihil excepturi dolorem mollitia adipisci aliquam, laborum, amet exercitationem que ipsum vero distinctio totam, omnis numquam. Autem distinctio natus possimus? Neque explicabo, animi totam eius, natus quae tempora est nulla quaerat nemo, architecto voluptatum accusamus asperiores! Hic aperiam perspiciatis dolores ea assumenda necessitatibus sint facilis enim.`;
-  const loremIpsumSplit = loremIpsum.split(' ');
-
-  // testContent();
   if (!global.currentElement) global.currentElement = global.taskGroups.All;
   appStorage.save();
 
@@ -497,12 +488,6 @@ const app = (function () {
   new SimpleBar(global.elem.navSectionsWrapper, {
     autoHide: false
   });
-  // new SimpleBar(global.elem.navProjectsWrapper, {
-  //   autoHide: false
-  // });
-  // new SimpleBar(global.elem.navGroupsWrapper, {
-  //   autoHide: false
-  // });
 
   updatePopups();
   refreshApp();

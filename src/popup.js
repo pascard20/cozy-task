@@ -1,6 +1,5 @@
 import templates from './htmlTemplates.js';
 import global from "./globals.js";
-import DOMPurify from 'dompurify';
 import { sanitize } from './utils.js';
 
 class PopUp {
@@ -63,7 +62,6 @@ class PopUp {
   }
 
   waitForUserInput(defaultValues = {}) {
-    // Reset form
     const form = this.DOMElement.querySelector('form');
     form.reset();
 
@@ -86,7 +84,6 @@ class PopUp {
       });
     });
 
-    // Ensure dialog is closed
     if (this.DOMElement.open) {
       this.DOMElement.close();
     }
@@ -114,7 +111,6 @@ class PopUp {
         this.DOMElement.removeEventListener('close', onClose);
       };
 
-      // Clean up any existing listeners and attach new ones
       cleanup();
       this.DOMElement.addEventListener('submit', onSubmit, { once: true });
       this.DOMElement.addEventListener('close', onClose, { once: true });
