@@ -497,6 +497,9 @@ const app = (function () {
   new SimpleBar(global.elem.navProjectsWrapper, {
     autoHide: false
   });
+  new SimpleBar(global.elem.navGroupsWrapper, {
+    autoHide: false
+  });
 
   updatePopups();
   refreshApp();

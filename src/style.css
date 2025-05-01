@@ -22,7 +22,8 @@
 html,
 body {
   height: 100%;
-  min-height: 832px;
+  /* min-height: 600px; */
+  overflow: auto;
 }
 
 body {
@@ -112,9 +113,12 @@ body {
   flex-direction: column;
 }
 
-.nav__projects-wrapper {
+.nav__projects-wrapper,
+.nav__groups-wrapper {
   overflow-y: auto;
   overflow-x: hidden;
+  height: fit-content;
+  min-height: 7.5rem;
 }
 
 .nav__projects {
@@ -238,6 +242,8 @@ body {
   color: var(--colorTextLight);
   margin-top: -1rem;
   overflow: hidden;
+  /* height: 2rem; */
+  flex-shrink: 0;
 }
 
 /* ---------------------------------- MAIN ---------------------------------- */
@@ -986,11 +992,20 @@ select.popup__input {
 
 /* -------------------------------- SIMPLEBAR ------------------------------- */
 
-/* Scrollbar track */
-.nav__projects-wrapper .simplebar-track.simplebar-vertical {
-  width: calc(.625rem);
-  opacity: .4;
+.nav__projects-wrapper,
+.nav__groups-wrapper {
+
+  /* Scrollbar track */
+  .simplebar-track.simplebar-vertical {
+    width: calc(.625rem);
+    opacity: .4;
+  }
+
+  &:has(.simplebar-track.simplebar-vertical[style*="visibility: visible"]) .simplebar-content {
+    margin-right: .875rem;
+  }
 }
+
 
 .simplebar-track.simplebar-vertical {
   background: var(--colorNav);
@@ -1027,12 +1042,34 @@ select.popup__input {
   margin-right: 1.125rem;
 }
 
-.nav__projects-wrapper:has(.simplebar-track.simplebar-vertical[style*="visibility: visible"]) .simplebar-content {
+.nav:has(.nav__projects-wrapper.simplebar-scrollable-y) .nav__add-project {
   margin-right: .875rem;
 }
 
-.nav:has(.nav__projects-wrapper.simplebar-scrollable-y) .nav__add-project {
-  margin-right: .875rem;
+/* Make sure both scrollbars have the same initial visibility */
+.nav__projects-wrapper .simplebar-track.simplebar-vertical,
+.nav__groups-wrapper .simplebar-track.simplebar-vertical {
+  width: .75rem;
+  background: var(--colorNav);
+  opacity: 1;
+  /* Set both to be consistently visible */
+}
+
+/* If you want both to be visible only on hover */
+.nav__projects-wrapper .simplebar-track.simplebar-vertical:not(:hover),
+.nav__groups-wrapper .simplebar-track.simplebar-vertical:not(:hover) {
+  opacity: 0.4;
+  /* Lower opacity when not hovered */
+}
+
+/* Make sure the hover state is consistent */
+.nav__projects-wrapper .simplebar-scrollbar:hover::before,
+.nav__groups-wrapper .simplebar-scrollbar:hover::before {
+  background-color: var(--colorText);
+}
+
+.nav__groups-wrapper .simplebar-track.simplebar-vertical {
+  visibility: visible !important;
 }
 
 /* ----------------------------- RESPONSIVENESS ----------------------------- */
@@ -1094,6 +1131,7 @@ select.popup__input {
 .main__title,
 .main__item,
 .main__count,
+.main__header,
 .main__item-description,
 .main__item-duedate,
 .main__item-name,
@@ -1102,8 +1140,7 @@ select.popup__input {
   transition-property: var(--navTransitionProps);
 }
 
-.main__title,
-.main__count {
+.main__header {
   transition: opacity .4s .3s;
 }
 
@@ -1127,9 +1164,9 @@ select.popup__input {
   }
 }
 
-@media (max-width: 640px) {}
+/* ---------------------------------- MEDIA --------------------------------- */
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
 
   .hamburger-button {
     left: calc(2.125rem + 1px);
@@ -1142,7 +1179,7 @@ select.popup__input {
 
   html,
   body {
-    min-height: 670px;
+    min-height: 600px;
   }
 
   .main {
@@ -1222,12 +1259,8 @@ select.popup__input {
   }
 
   body:has(.nav.open) .main__header {
-
-    .main__title,
-    .main__count {
-      opacity: 0;
-      transition: .15s;
-    }
+    opacity: 0;
+    transition: .15s;
   }
 
   body:has(.nav.open) .nav-backdrop {
@@ -1335,7 +1368,7 @@ select.popup__input {
   }
 
   .popup__task {
-    width: 400px;
+    width: 360px;
     min-height: initial;
     /* padding: 1.5rem 2rem; */
 
@@ -1409,10 +1442,37 @@ select.popup__input {
       }
     }
   }
+
+  .nav__projects-wrapper,
+  .nav__groups-wrapper {
+    min-height: 6.25rem;
+  }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1399px) {
   .main__wrapper {
     margin-right: 0vw;
+  }
+}
+
+@media (max-width: 479px) {
+  .popup {
+    max-width: 90vw;
+  }
+
+  .popup__delete {
+    width: 90vw;
+
+    &>* {
+      width: 100%;
+    }
+  }
+
+  .popup__info-upper {
+    white-space: wrap;
+  }
+
+  .main__item-duedate {
+    white-space: wrap;
   }
 }
