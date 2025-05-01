@@ -17,12 +17,15 @@
   --colorHoverModerate: rgba(0, 0, 0, .225);
   --colorHover: rgba(0, 0, 0, .075);
   --colorHoverLight: rgba(0, 0, 0, .03);
+
+  --transitionShort: .15s;
+  --transitionMedium: .45s;
+  --transitionLong: 1s;
 }
 
 html,
 body {
   height: 100%;
-  /* min-height: 600px; */
   overflow: auto;
 }
 
@@ -59,11 +62,11 @@ body {
   }
 
   &>.nav__add-project {
-    transition: all 0s, background .1s;
+    transition: all 0s, background var(--transitionShort);
   }
 
   &.loaded>.nav__add-project {
-    transition: all var(--transitionTime), opacity var(--transitionTime) ease-out, transform var(--transitionTime) ease, background .1s;
+    transition: all var(--transitionTime), opacity var(--transitionTime) ease-out, transform var(--transitionTime) ease, background var(--transitionShort);
   }
 }
 
@@ -113,38 +116,50 @@ body {
   flex-direction: column;
 }
 
-.nav__projects-wrapper,
+/* .nav__projects-wrapper,
 .nav__groups-wrapper {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: fit-content;
+  min-height: 7.5rem;
+} */
+
+.nav__sections-wrapper {
   overflow-y: auto;
   overflow-x: hidden;
   height: fit-content;
   min-height: 7.5rem;
 }
 
-.nav__projects {
+.nav__projects,
+.nav__groups {
   width: 100%;
   height: 100%;
 }
 
+.nav__groups {
+  /* margin-top: -.25rem; */
+  margin-bottom: 1rem;
+}
+
 .nav__section-title {
   font-size: 1.25rem;
-  margin: .5rem 0 -.5rem
+  margin: .375rem 0 .375rem
 }
 
 .nav__item {
   display: flex;
-  /* justify-content: space-between; */
   align-items: center;
   position: relative;
   gap: 1rem;
   padding: .5rem;
 
   .nav__count {
-    transition: .2s;
+    transition: var(--transitionShort);
   }
 
   .nav__item-settings {
-    transition: .15s;
+    transition: var(--transitionShort);
   }
 
   &:hover {
@@ -153,11 +168,11 @@ body {
     cursor: pointer;
 
     .nav__count {
-      transition: .15s;
+      transition: var(--transitionShort);
     }
 
     .nav__item-settings {
-      transition: .2s;
+      transition: var(--transitionShort);
     }
 
     .nav__count {
@@ -178,7 +193,7 @@ body {
   width: 1.675rem;
   height: 1.75rem;
   color: var(--colorTextOpaque);
-  transition: .15s;
+  transition: var(--transitionShort);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -193,7 +208,6 @@ body {
   position: absolute;
   right: 0;
   display: flex;
-  /* gap: .125rem; */
   opacity: 0;
   margin-right: .1rem;
 }
@@ -201,7 +215,6 @@ body {
 .nav__item-icon {
   width: 1rem;
   height: 1rem;
-  /* background: var(--colorTextLight); */
   color: var(--colorTextLight);
   display: flex;
   justify-content: center;
@@ -209,7 +222,6 @@ body {
 }
 
 .nav__item-name {
-  /* flex-grow: 1; */
   max-width: 65%;
   width: 100%;
 }
@@ -242,7 +254,6 @@ body {
   color: var(--colorTextLight);
   margin-top: -1rem;
   overflow: hidden;
-  /* height: 2rem; */
   flex-shrink: 0;
 }
 
@@ -270,7 +281,6 @@ body {
   align-items: flex-end;
   line-height: 1;
   gap: 1rem;
-  /* position: relative; */
   padding: 0 1rem 0 2.875rem;
   flex-grow: 0;
 }
@@ -320,7 +330,7 @@ body {
   column-gap: 1rem;
   align-items: center;
   padding: .875rem 2rem .875rem 1rem;
-  transition: all .1s, background-color .1s;
+  transition: all var(--transitionShort), background-color var(--transitionShort);
 
   &:hover {
     background: var(--colorNav);
@@ -338,7 +348,7 @@ body {
   width: 1rem;
   height: 1rem;
   border: 2px solid var(--colorTextLight);
-  transition: .1s;
+  transition: var(--transitionShort);
 }
 
 .main__item-duedate {
@@ -374,7 +384,7 @@ body {
 
   opacity: 0;
   margin-right: -1rem;
-  transition: .1s;
+  transition: var(--transitionShort);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -468,7 +478,7 @@ dialog:not([open]) {
 .popup__exit {
   font-size: 1.5rem;
   color: var(--colorTextOpaque);
-  transition: .15s;
+  transition: var(--transitionShort);
   width: 2rem;
   height: 2rem;
   display: flex;
@@ -490,7 +500,7 @@ dialog:not([open]) {
     position: absolute;
     top: .5rem;
     padding: 0 .625rem;
-    transition: .2s;
+    transition: var(--transitionShort);
 
     color: var(--colorTextLight);
 
@@ -508,7 +518,7 @@ dialog:not([open]) {
       left: 50%;
       right: 50%;
       background: var(--colorBackground);
-      transition: .2s;
+      transition: var(--transitionShort);
       z-index: 1;
     }
   }
@@ -517,10 +527,8 @@ dialog:not([open]) {
   .popup__input:not(:placeholder-shown)+label {
     top: -0.65rem;
     font-size: 0.8rem;
-    /* color: var(--colorText); */
 
     &::before {
-      /* width: calc(100% + .5rem); */
       left: .375rem;
       right: .375rem;
     }
@@ -539,7 +547,7 @@ select.popup__input {
   height: 100%;
   resize: none;
   background: var(--colorBackground);
-  transition: .15s;
+  transition: var(--transitionShort);
   outline: 1px solid transparent;
 
   &:focus {
@@ -596,17 +604,16 @@ select.popup__input {
 
 .icon-options input[type="radio"] {
   display: none;
-  /* Hide the default radio */
 }
 
 .icon-options label {
   font-size: 1.25rem;
   color: var(--colorTextSubtle);
-  transition: .15s;
+  transition: var(--transitionShort);
   flex: 0 0 auto;
 
   i {
-    transition: .15s;
+    transition: var(--transitionShort);
   }
 
   &:hover {
@@ -716,7 +723,7 @@ select.popup__input {
   padding: .375rem 1.5rem;
   cursor: pointer;
   margin: 2.5rem 0;
-  transition: .15s;
+  transition: var(--transitionShort);
 
   &:hover {
     background: var(--colorTextLight);
@@ -731,7 +738,6 @@ select.popup__input {
   display: flex;
   grid-column: 2;
   grid-row: 3;
-  /* justify-content: center; */
   margin-top: -.5rem;
   align-items: center;
   align-self: flex-start;
@@ -739,7 +745,6 @@ select.popup__input {
 
   .isImportant-label {
     position: relative;
-    /* color: red; */
     cursor: pointer;
     padding-left: .25rem;
     color: var(--colorText);
@@ -774,8 +779,8 @@ select.popup__input {
     right: 0;
     bottom: 0;
     background-color: var(--colorTextSubtle);
-    -webkit-transition: .4s;
-    transition: all .4s, background-color .15s;
+    -webkit-transition: var(--transitionMedium);
+    transition: all var(--transitionMedium), background-color var(--transitionShort);
   }
 
   .slider:before {
@@ -786,8 +791,8 @@ select.popup__input {
     left: .25rem;
     bottom: .25rem;
     background-color: white;
-    -webkit-transition: .4s;
-    transition: .4s;
+    -webkit-transition: var(--transitionMedium);
+    transition: var(--transitionMedium);
   }
 
   input:checked+.slider {
@@ -831,7 +836,6 @@ select.popup__input {
   flex-direction: column;
   gap: .25rem;
   margin-top: 1rem;
-  /* padding: 0 1rem; */
   width: min-content;
 }
 
@@ -895,8 +899,7 @@ select.popup__input {
   font-weight: 500;
   letter-spacing: .01em;
   box-shadow: 0 0 .25rem 0 var(--colorHoverModerate);
-  transition: transform 1s;
-  /* opacity: .75; */
+  transition: transform var(--transitionLong);
 
   &.show {
     transform: translateX(0);
@@ -910,7 +913,7 @@ select.popup__input {
   font-weight: normal;
   color: var(--colorTextOpaque);
   cursor: pointer;
-  transition: .15s;
+  transition: var(--transitionShort);
 
   &:hover {
     color: var(--colorTextDark)
@@ -960,7 +963,7 @@ select.popup__input {
 
 .credits__name,
 .credits__link {
-  transition: .15s;
+  transition: var(--transitionShort);
 
   &:hover {
     color: var(--colorTextDark);
@@ -971,7 +974,6 @@ select.popup__input {
   display: inline-block;
   transform: scale(1);
   margin-right: .5rem;
-  transition: transform .25s;
 
   &:hover {
     transform: scale(1.1);
@@ -992,8 +994,10 @@ select.popup__input {
 
 /* -------------------------------- SIMPLEBAR ------------------------------- */
 
-.nav__projects-wrapper,
-.nav__groups-wrapper {
+/* .nav__projects-wrapper,
+.nav__groups-wrapper { */
+
+.nav__sections-wrapper {
 
   /* Scrollbar track */
   .simplebar-track.simplebar-vertical {
@@ -1010,7 +1014,6 @@ select.popup__input {
 .simplebar-track.simplebar-vertical {
   background: var(--colorNav);
   width: .75rem;
-  /* margin-top: 1rem; */
   opacity: 1;
 }
 
@@ -1022,7 +1025,7 @@ select.popup__input {
     content: '';
     background: var(--colorTextLight);
     border-radius: 0;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transitionShort) ease;
     pointer-events: auto;
   }
 }
@@ -1042,34 +1045,11 @@ select.popup__input {
   margin-right: 1.125rem;
 }
 
-.nav:has(.nav__projects-wrapper.simplebar-scrollable-y) .nav__add-project {
+/* .nav:has(.nav__projects-wrapper.simplebar-scrollable-y) .nav__add-project {
   margin-right: .875rem;
-}
-
-/* Make sure both scrollbars have the same initial visibility */
-.nav__projects-wrapper .simplebar-track.simplebar-vertical,
-.nav__groups-wrapper .simplebar-track.simplebar-vertical {
-  width: .75rem;
-  background: var(--colorNav);
-  opacity: 1;
-  /* Set both to be consistently visible */
-}
-
-/* If you want both to be visible only on hover */
-.nav__projects-wrapper .simplebar-track.simplebar-vertical:not(:hover),
-.nav__groups-wrapper .simplebar-track.simplebar-vertical:not(:hover) {
-  opacity: 0.4;
-  /* Lower opacity when not hovered */
-}
-
-/* Make sure the hover state is consistent */
-.nav__projects-wrapper .simplebar-scrollbar:hover::before,
-.nav__groups-wrapper .simplebar-scrollbar:hover::before {
-  background-color: var(--colorText);
-}
-
-.nav__groups-wrapper .simplebar-track.simplebar-vertical {
-  visibility: visible !important;
+} */
+.nav:has(.nav__sections-wrapper.simplebar-scrollable-y) .nav__add-project {
+  margin-right: .875rem;
 }
 
 /* ----------------------------- RESPONSIVENESS ----------------------------- */
@@ -1141,22 +1121,27 @@ select.popup__input {
 }
 
 .main__header {
-  transition: opacity .4s .3s;
+  transition: opacity var(--transitionMedium) .3s;
 }
 
 .hamburger-button {
-  transition: left var(--responsiveTransition), top var(--responsiveTransition), opacity 0s 0s, color .15s, font-size .15s, transform var(--responsiveTransition);
+  transition: left var(--responsiveTransition),
+    top var(--responsiveTransition),
+    opacity 0s 0s,
+    color var(--transitionShort),
+    font-size var(--transitionShort),
+    transform var(--responsiveTransition);
 }
 
 .popup * {
   transition: 0s;
 
   .popup__btn {
-    transition: background .15s;
+    transition: background var(--transitionShort);
   }
 
   label {
-    transition: font-size .15s, top .15s;
+    transition: font-size var(--transitionShort), top var(--transitionShort);
   }
 
   .popup__input-isImportant label {
@@ -1166,6 +1151,53 @@ select.popup__input {
 
 /* ---------------------------------- MEDIA --------------------------------- */
 
+@media (max-width: 1399px) {
+  .main__wrapper {
+    margin-right: 0vw;
+  }
+
+  .nav__section-title {
+    font-size: 1.125rem;
+  }
+
+  .nav__item-name {
+    max-width: 58%;
+  }
+
+  .nav__sections-wrapper {
+    min-height: 6.25rem;
+  }
+
+  .nav__item {
+    padding: .375rem;
+  }
+
+  .nav__item-icon {
+    margin-right: -.25rem;
+  }
+
+  .credits__upper {
+    font-size: calc(.75em);
+    margin-left: 1.75rem;
+  }
+
+  .main__add-task {
+    font-size: .875rem;
+  }
+
+  .nav {
+    position: relative;
+    width: var(--navSmallWidth);
+    min-width: var(--navSmallWidth);
+    font-size: .875rem;
+    padding: 2.5rem 1.5rem 2.5rem;
+
+    h1 {
+      font-size: 2.25rem;
+    }
+  }
+}
+
 @media (max-width: 1023px) {
 
   .hamburger-button {
@@ -1173,8 +1205,12 @@ select.popup__input {
     opacity: 1;
     top: 2.5rem;
     font-size: 1.5rem;
-    transition: left var(--responsiveTransition), top var(--responsiveTransition), opacity .2s var(--responsiveTransition), color .15s, font-size .15s, transform var(--responsiveTransition);
-
+    transition: left var(--responsiveTransition),
+      top var(--responsiveTransition),
+      opacity var(--transitionShort) var(--responsiveTransition),
+      color var(--transitionShort),
+      font-size var(--transitionShort),
+      transform var(--responsiveTransition);
   }
 
   html,
@@ -1225,22 +1261,14 @@ select.popup__input {
   }
 
   .nav {
-    position: relative;
-    margin-left: calc(-1 * var(--navSmallWidth));
-    width: var(--navSmallWidth);
-    min-width: var(--navSmallWidth);
-    font-size: .875rem;
-    padding: 1.5rem 1.5rem 2.5rem;
     transform: translateX(0);
+    margin-left: calc(-1 * var(--navSmallWidth));
+    padding-top: 1.5rem;
 
     &.open {
       transform: translateX(var(--navSmallWidth));
       box-shadow: var(--colorHoverModerate) 0 0 .75rem 0;
 
-    }
-
-    h1 {
-      font-size: 2.25rem;
     }
   }
 
@@ -1254,13 +1282,13 @@ select.popup__input {
     top: 0;
     bottom: 0;
     z-index: -1;
-    transition: background .15s, z-index 0.05s .15s;
+    transition: background var(--transitionShort), z-index 0.05s var(--transitionShort);
     opacity: .75;
   }
 
   body:has(.nav.open) .main__header {
     opacity: 0;
-    transition: .15s;
+    transition: var(--transitionShort);
   }
 
   body:has(.nav.open) .nav-backdrop {
@@ -1287,23 +1315,6 @@ select.popup__input {
     .icon-close {
       opacity: 1;
     }
-  }
-
-  .nav__item {
-    padding: .375rem;
-  }
-
-  .nav__item-icon {
-    margin-right: -.25rem;
-  }
-
-  .credits__upper {
-    font-size: calc(.75em);
-    margin-left: 1.75rem;
-  }
-
-  .main__add-task {
-    font-size: .875rem;
   }
 
   .notifications {
@@ -1351,7 +1362,6 @@ select.popup__input {
   }
 
   .popup__delete {
-    /* padding: 1.5rem 2rem 1rem; */
     padding-bottom: 1rem;
 
     .popup__info-upper {
@@ -1370,7 +1380,6 @@ select.popup__input {
   .popup__task {
     width: 360px;
     min-height: initial;
-    /* padding: 1.5rem 2rem; */
 
     .popup__input-area {
       grid-row: initial;
@@ -1443,16 +1452,6 @@ select.popup__input {
     }
   }
 
-  .nav__projects-wrapper,
-  .nav__groups-wrapper {
-    min-height: 6.25rem;
-  }
-}
-
-@media (max-width: 1399px) {
-  .main__wrapper {
-    margin-right: 0vw;
-  }
 }
 
 @media (max-width: 479px) {

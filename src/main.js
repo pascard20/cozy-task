@@ -494,12 +494,15 @@ const app = (function () {
   new SimpleBar(global.elem.mainTasksWrapper, {
     autoHide: false
   });
-  new SimpleBar(global.elem.navProjectsWrapper, {
+  new SimpleBar(global.elem.navSectionsWrapper, {
     autoHide: false
   });
-  new SimpleBar(global.elem.navGroupsWrapper, {
-    autoHide: false
-  });
+  // new SimpleBar(global.elem.navProjectsWrapper, {
+  //   autoHide: false
+  // });
+  // new SimpleBar(global.elem.navGroupsWrapper, {
+  //   autoHide: false
+  // });
 
   updatePopups();
   refreshApp();
