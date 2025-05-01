@@ -9,7 +9,7 @@ import templates from './htmlTemplates.js';
 import { TaskPopUp, ProjectPopUp, DeletePopUp } from './popup.js';
 import { MainHeader, Project, TaskGroup } from './uiElements.js';
 import { createNotification } from './notifcation.js';
-import { findElement, moveTask, updateTaskGroups, sortProjectTasks } from './helpers.js';
+import { hideNavBar, findElement, moveTask, updateTaskGroups, sortProjectTasks } from './helpers.js';
 import appStorage from './appStorage.js';
 
 const app = (function () {
@@ -251,7 +251,10 @@ const app = (function () {
     }
 
     else {
-      if (tempElement) global.currentElement = tempElement;
+      if (tempElement) {
+        global.currentElement = tempElement;
+        hideNavBar();
+      }
       refreshApp();
     }
   }
@@ -313,6 +316,7 @@ const app = (function () {
 
     if (newProject) {
       global.currentElement = newProject;
+      hideNavBar();
       createNotification(`Project "${newProject.title}" created`);
       refreshApp();
     }
@@ -415,6 +419,11 @@ const app = (function () {
     }
   }
 
+  const handleHamburgerClick = () => {
+    global.elem.nav.classList.toggle('open');
+    global.elem.hamburgerButton.classList.toggle('open');
+  }
+
   /* ------------------------- Initialize task groups ------------------------- */
   global.taskGroups = {
     All: new TaskGroup('All', global.icons.globe, task => !task.isCompleted),
@@ -423,7 +432,7 @@ const app = (function () {
     }),
     'This Week': new TaskGroup('This Week', global.icons.week, task => {
       const days = task.getDaysLeft();
-      return ((days >= 0) && (days <= 7)) && !task.isCompleted;
+      return days !== null && days !== undefined && days >= 0 && days <= 7 && !task.isCompleted;
     }),
     Overdue: new TaskGroup('Overdue', global.icons.clock, task => {
       return task.getDaysLeft() < 0 && !task.isCompleted;
@@ -470,6 +479,7 @@ const app = (function () {
     createNotification('Feel free to click again for more tasks :)');
   }, { once: true });
   global.elem.demoDeleteButton.addEventListener('click', deleteDemoContent);
+  global.elem.hamburgerButton.addEventListener('click', handleHamburgerClick);
 
   /* ------------------------------ Initialize UI ----------------------------- */
 
@@ -485,4 +495,5 @@ const app = (function () {
   document.querySelectorAll('.app-section').forEach(section => {
     section.classList.add('loaded');
   });
+  document.querySelector('.hamburger-button').classList.add('loaded');
 })();

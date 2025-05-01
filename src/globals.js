@@ -22,6 +22,7 @@ const global = {
     allNavSection: document.querySelectorAll('.nav__section'),
     demoAddButton: document.querySelector('.demo-add'),
     demoDeleteButton: document.querySelector('.demo-delete'),
+    hamburgerButton: document.querySelector('.hamburger-button'),
 
     get btnNewTask() {
       return document.querySelector('.main__add-task');
@@ -40,6 +41,7 @@ const global = {
     car: `<i class="fa-solid fa-car"></i>`,
     check: `<i class="fa-solid fa-check"></i>`,
     clock: `<i class="fa-solid fa-clock"></i>`,
+    close: `<i class="fa-solid fa-xmark"></i>`,
     day: `<i class="fa-solid fa-calendar-day"></i>`,
     dumbbell: `<i class="fa-solid fa-dumbbell"></i>`,
     edit: `<i class="fa-solid fa-pen-to-square"></i>`,

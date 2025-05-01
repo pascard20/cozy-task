@@ -83,3 +83,7 @@ export const clearProjects = () => {
   global.projects = [];
   global.deleted = {};
 }
+
+export const hideNavBar = () => {
+  setTimeout(() => global.elem.nav.classList.remove('open'), 10);
+}
