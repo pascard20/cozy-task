@@ -28,13 +28,22 @@ const global = {
     demoDeleteButton: document.querySelector('.demo-delete'),
     hamburgerButton: document.querySelector('.hamburger-button'),
     navBackdrop: document.querySelector('.nav-backdrop'),
+    btnNewTaskFixed: document.querySelector('.main__add-task.fixed'),
 
-    get btnNewTask() {
-      return document.querySelector('.main__add-task');
+    get btnNewTaskHeader() {
+      return document.querySelector('.main__add-task.header');
     },
 
     get btnNewProject() {
       return document.querySelector('.nav__add-project');
+    },
+
+    get btnEditProject() {
+      return document.querySelector('.main__edit-project');
+    },
+
+    get btnDeleteProject() {
+      return document.querySelector('.main__delete-project');
     }
   },
 

@@ -193,7 +193,13 @@ import appStorage from './appStorage.js';
           global.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
-      global.elem.btnNewTask?.addEventListener('click', handleNewTask);
+      global.elem.btnNewTaskHeader?.addEventListener('click', handleNewTask);
+      global.elem.btnEditProject?.addEventListener('click', () => {
+        handleEditProject(global.currentElement);
+      });
+      global.elem.btnDeleteProject?.addEventListener('click', () => {
+        handleDeleteProject(global.currentElement);
+      });
     }
   }
 
@@ -479,6 +485,8 @@ import appStorage from './appStorage.js';
   global.elem.navBackdrop.addEventListener('click', () => {
     global.elem.nav.classList.remove('open');
   })
+  global.elem.btnNewTaskFixed.addEventListener('click', handleNewTask);
+
 
   /* ------------------------------ Initialize UI ----------------------------- */
 

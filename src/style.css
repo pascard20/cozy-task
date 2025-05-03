@@ -276,30 +276,81 @@ body {
   flex-grow: 0;
 }
 
+.main__title-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-grow: 1;
+  gap: 1rem;
+  min-width: 0;
+}
+
 .main__title {
   font-size: 2.25rem;
   padding-bottom: .125rem;
   margin-bottom: -.125rem;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .main__count {
   font-size: 1.75rem;
   gap: .5em;
-  margin-bottom: 3px;
-  flex-grow: 1;
+  transform: translate(.125rem, .125em);
+  flex-grow: 0;
+  flex-shrink: 0;
 }
 
 .main__add-task {
   text-align: right;
   margin-bottom: -.25rem;
   color: var(--colorTextLight);
-  right: 0;
-  padding: .5rem 1rem;
+  padding: .75rem 1rem;
+  height: fit-content;
   white-space: nowrap;
+  transition: background var(--transitionShort);
+  opacity: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 
   &:hover {
     background: var(--colorNav);
     cursor: pointer;
+  }
+}
+
+.main__add-task.fixed {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  top: initial;
+  right: initial;
+  margin-bottom: 0;
+  border: 1px solid var(--colorTextOpaque);
+  font-size: 1rem;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity var(--transitionMedium), background var(--transitionShort);
+}
+
+.main__project-settings {
+  display: none;
+  margin: -.5rem 0 -.5rem -.675rem;
+  font-size: .875rem;
+  color: var(--colorTextLight);
+
+  &>* {
+    padding: .5rem .875rem;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--colorNav);
+    }
+  }
+
+  i {
+    margin-right: .5rem;
   }
 }
 
@@ -1083,7 +1134,7 @@ select.popup__input {
 
 .nav {
   transform: translateX(0);
-  z-index: 1;
+  z-index: 15;
   box-shadow: var(--colorHoverModerate) 0 0 0 0;
 }
 
@@ -1441,9 +1492,48 @@ select.popup__input {
     }
   }
 
-}
+  .main__header {
+    margin-top: calc(5.25rem - 2px);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: flex-end;
+    line-height: 1;
+    gap: 1rem;
+    padding: 0 1rem 0 2.875rem;
+    flex-grow: 0;
+    flex-wrap: wrap;
+  }
 
-@media (max-width: 479px) {
+  .main__count {
+    flex-grow: 1;
+  }
+
+  .main__add-task {
+    opacity: 0;
+    display: none;
+  }
+
+  .main__add-task.fixed {
+    opacity: 1;
+    display: block;
+  }
+
+  .main__project-settings {
+    display: flex;
+    width: 100%;
+  }
+
+  .nav__item-settings {
+    display: none;
+  }
+
+  .nav__item:hover .nav__count {
+    opacity: 1;
+  }
+  
+}
+  
+  @media (max-width: 479px) {
   .popup {
     max-width: 90vw;
   }

@@ -139,9 +139,15 @@ export default {
 
   getMainHeader(title, counterHTML) {
     return `
+    <div class="main__title-wrapper">
       <h1 class="main__title ellipsis">${title}</h1>
       ${counterHTML}
-      <div class="main__add-task">+ New task</div>
+      </div>
+      <div class="main__add-task header">+ New task</div>
+      <div class="main__project-settings">
+        <div class="main__edit-project">${global.icons.edit}Edit project</div>
+        <div class="main__delete-project">${global.icons.trash}Delete project</div>
+      </div>
     `;
   },
 
