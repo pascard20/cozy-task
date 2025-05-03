@@ -3639,13 +3639,22 @@ const global = {
     demoDeleteButton: document.querySelector('.demo-delete'),
     hamburgerButton: document.querySelector('.hamburger-button'),
     navBackdrop: document.querySelector('.nav-backdrop'),
+    btnNewTaskFixed: document.querySelector('.main__add-task.fixed'),
 
-    get btnNewTask() {
-      return document.querySelector('.main__add-task');
+    get btnNewTaskHeader() {
+      return document.querySelector('.main__add-task.header');
     },
 
     get btnNewProject() {
       return document.querySelector('.nav__add-project');
+    },
+
+    get btnEditProject() {
+      return document.querySelector('.main__edit-project');
+    },
+
+    get btnDeleteProject() {
+      return document.querySelector('.main__delete-project');
     }
   },
 
@@ -3974,9 +3983,15 @@ const popUpSettings = {
 
   getMainHeader(title, counterHTML) {
     return `
+    <div class="main__title-wrapper">
       <h1 class="main__title ellipsis">${title}</h1>
       ${counterHTML}
-      <div class="main__add-task">+ New task</div>
+      </div>
+      <div class="main__add-task header">+ New task</div>
+      <div class="main__project-settings">
+        <div class="main__edit-project">${globals.icons.edit}Edit project</div>
+        <div class="main__delete-project">${globals.icons.trash}Delete project</div>
+      </div>
     `;
   },
 
@@ -7050,7 +7065,7 @@ class Task {
   update(title, description = null, date = null, isImportant = false, project) {
     this.title = escapeHTML(title);
     if (description) this.description = escapeHTML(description);
-    if (date) this.date = date;
+    if (date || date === null) this.date = date;
     this.isImportant = isImportant;
     this.changeProject(project);
     return this;
@@ -7647,7 +7662,13 @@ const applyOriginalProjects = projectData => {
           globals.elem.mainTasks.insertAdjacentHTML('beforeend', task.returnHTML());
         })
       }
-      globals.elem.btnNewTask?.addEventListener('click', handleNewTask);
+      globals.elem.btnNewTaskHeader?.addEventListener('click', handleNewTask);
+      globals.elem.btnEditProject?.addEventListener('click', () => {
+        handleEditProject(globals.currentElement);
+      });
+      globals.elem.btnDeleteProject?.addEventListener('click', () => {
+        handleDeleteProject(globals.currentElement);
+      });
     }
   }
 
@@ -7792,7 +7813,9 @@ const applyOriginalProjects = projectData => {
     const tempProjectTitle = task.project.title;
     try {
       const editedTask = await handleUserInput(globals.popups.editTask, data => {
-        return task.update(data.get('mainTitle'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
+        const dueDate = data.get('dueDate') === '' ? null : data.get('dueDate');
+        
+        return task.update(data.get('mainTitle'), data.get('description'), dueDate, data.get('isImportant') ? true : false, findElement(data.get('project')))
       }, {
         '#mainTitle': task.title,
         '#description': task.description,
@@ -7933,6 +7956,8 @@ const applyOriginalProjects = projectData => {
   globals.elem.navBackdrop.addEventListener('click', () => {
     globals.elem.nav.classList.remove('open');
   })
+  globals.elem.btnNewTaskFixed.addEventListener('click', handleNewTask);
+
 
   /* ------------------------------ Initialize UI ----------------------------- */
 
