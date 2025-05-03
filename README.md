@@ -15,19 +15,20 @@ COZYtask is a task management application designed to help you keep track of you
 ## Live Preview
 
 <div align="center">
-  <h3><a href="https://pascard20.github.io/cozy-task/">View Live Demo</a></h3>
   <a href="https://pascard20.github.io/cozy-task/"><img src="./screenshots/preview.png" alt="COZYtask Preview"></a>
+  <h3><a href="https://pascard20.github.io/cozy-task/">View Live Demo</a></h3>
 </div>
 
 ## Technologies Used
+
 - **HTML, CSS, JavaScript**
 - **Webpack** for asset bundling and optimization
 - **DOMPurify** for input sanitization
 - **simplebar** for custom scrollbars
-- **localStorage** for data storage
+- **localStorage** to save data
 
 ## Acknowledgments
 
-* Designed and built by [Łukasz Pasternak](https://github.com/pascard20).
-* Created as a part of [The Odin Project](https://www.theodinproject.com/) curriculum.
+* Created as part of [The Odin Project](https://www.theodinproject.com/) curriculum.
 * Icons by [Font Awesome](https://fontawesome.com/).
+* Designed and built by [Łukasz Pasternak](https://github.com/pascard20).
