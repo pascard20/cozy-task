@@ -27,7 +27,7 @@ export class Task {
   update(title, description = null, date = null, isImportant = false, project) {
     this.title = escapeHTML(title);
     if (description) this.description = escapeHTML(description);
-    if (date) this.date = date;
+    if (date || date === null) this.date = date;
     this.isImportant = isImportant;
     this.changeProject(project);
     return this;

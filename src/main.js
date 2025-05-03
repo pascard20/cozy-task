@@ -344,7 +344,9 @@ import appStorage from './appStorage.js';
     const tempProjectTitle = task.project.title;
     try {
       const editedTask = await handleUserInput(global.popups.editTask, data => {
-        return task.update(data.get('mainTitle'), data.get('description'), data.get('dueDate'), data.get('isImportant') ? true : false, findElement(data.get('project')))
+        const dueDate = data.get('dueDate') === '' ? null : data.get('dueDate');
+        
+        return task.update(data.get('mainTitle'), data.get('description'), dueDate, data.get('isImportant') ? true : false, findElement(data.get('project')))
       }, {
         '#mainTitle': task.title,
         '#description': task.description,
