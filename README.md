@@ -1,16 +1,13 @@
 # COZYtask
 
-COZYtask is a task management application designed to help you keep track of your work and projects. It features a clean user interface, responsive design, and functionality for creating, editing, and managing tasks and projects. It's easy to use and works across all your devices.
+COZYtask is a task management application designed to help you keep track of your work and projects.
 
 ## Features
 
-- **Task Management**: Create and organize tasks with titles, descriptions, due dates, and importance flags.
-- **Project Organization**: Group related tasks into projects with customizable icons and titles.
-- **Task Groups**: Tasks automatically sort into useful groups, like "Today", "This Week", "Overdue", etc.
+- **Task Management**: Create and organize tasks with titles, descriptions, due dates, and importance flags. Group related tasks into projects with customizable icons and titles. 
 - **Responsive Design**: Works well on both computers and mobile devices.
-- **Persistent Storage**: Your data saves automatically in your browser.
+- **Persistent Storage**: Data saves automatically in the browser.
 - **Notifications**: Informative pop-ups appear when you make changes.
-- **Demo Content**: Quickly generate sample projects and tasks for testing.
 
 ## Live Preview
 
